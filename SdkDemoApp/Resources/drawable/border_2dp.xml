@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent"/>
+    <!-- See sdk\platforms\android-23\data\res\drawable-hdpi\divider_horizontal_bright.9.png -->
+    <stroke android:width="2dp" android:color="@color/divider"/>
+    <corners android:radius="2dp"/>
+</shape>

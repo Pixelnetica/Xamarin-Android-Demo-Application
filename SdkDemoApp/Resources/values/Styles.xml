@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+  
+  <!-- Basic application theme -->
+  <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primary_dark</item>
+    <item name="colorAccent">@color/accent</item>
+  </style>
+
+  <!-- NOTE: different for v21 -->
+  <style name="AppBaseTheme.NoActionBar">
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowActionBar">false</item>
+  </style>
+
+  <!-- Main application theme -->
+  <style name="AppTheme" parent="AppBaseTheme.NoActionBar">
+
+    <!-- Need by new ToolBar -->
+    <item name="actionBarStyle">@style/AppActionBar</item>
+
+    <!-- Using custom activated background prior to V21 -->
+    <item name="activatedBackgroundIndicator">@drawable/activated_background</item>
+  </style>
+
+
+  <!-- Common Toolbar theme -->
+  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+  <!-- Common Toolbar popup theme -->
+  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+  <style name="AppActionBar" parent="AppTheme.AppBarOverlay">
+    <item name="android:displayOptions"></item>
+  </style>
+
+
+</resources>
