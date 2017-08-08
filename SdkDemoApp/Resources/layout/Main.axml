@@ -18,18 +18,18 @@
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-            <LinearLayout
+          <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-              <Button
-                  style="?attr/buttonBarButtonStyle"
+                <Button
+                    style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/primary_text"
                     android:text="@string/btn_open_image"
                     android:id="@+id/btn_open_image"
-                    android:drawableLeft="@drawable/ic_description_black_24dp"/>
+                    android:drawableLeft="@drawable/ic_description_black_24dp" />
                 <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
                     android:textColor="@color/primary_text"
                     android:text="@string/btn_take_photo"
                     android:id="@+id/btn_take_photo"
-                    android:drawableLeft="@drawable/ic_photo_camera_black_24dp"/>
+                    android:drawableLeft="@drawable/ic_photo_camera_black_24dp" />
                 <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
@@ -45,47 +45,48 @@
                     android:textColor="@color/primary_text"
                     android:text="@string/btn_crop_image"
                     android:id="@+id/btn_crop_image"
-                    android:drawableLeft="@drawable/ic_crop_black_24dp"/>
-              <Button
-                  style="?attr/buttonBarButtonStyle"
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:textColor="@color/primary_text"
-                  android:text="@string/btn_edit_image"
-                  android:id="@+id/btn_edit_image" />
-              <Button
+                    android:drawableLeft="@drawable/ic_crop_black_24dp" />
+                <android.support.v7.widget.AppCompatSpinner
+                    style="?attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spn_color_mode"
+                    app:popupTheme="@style/AppTheme.AppBarSpinnerPopup"
+                    />
+                <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/primary_text"
                     android:text="@string/btn_save_image"
                     android:id="@+id/btn_save_image"
-                    android:drawableLeft="@drawable/ic_action_save"/>
+                    android:drawableLeft="@drawable/ic_action_save" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-    <!-- Entire content with padding -->
+<!-- Entire content with padding -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp"
         android:background="@android:color/background_light"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <!-- Light border around image -->
+    <!-- Light border around image -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/border_2dp"
             android:padding="2dp">
-            <!-- Main image -->
+        <!-- Main image -->
             <ImageView
                 android:id="@+id/image_holder"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/darker_gray"
                 android:scaleType="fitCenter" />
-            <!-- Wait indicator -->
-          <include layout="@layout/Wait"/>
+        <!-- Wait indicator -->
+            <include
+                layout="@layout/Wait" />
         </FrameLayout>
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace App
+namespace App.Main
 {
     [Activity(Label = "EditActivity", Icon = "@drawable/icon", Theme = "@style/AppTheme")]
     public class EditActivity : Utils.BaseActivity

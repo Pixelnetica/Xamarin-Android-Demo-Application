@@ -1,4 +1,4 @@
-﻿namespace App
+﻿namespace App.Main
 {
     static class AppLog
     {

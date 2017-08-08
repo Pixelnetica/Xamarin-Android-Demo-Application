@@ -12,7 +12,7 @@ using Android.Widget;
 using ImageSdkWrapper;
 using Android.Util;
 
-namespace App
+namespace App.Main
 {
     class CropImageTask : AsyncTask<CropImageTask.Job, Java.Lang.Void, CropImageTask.Job>
     {

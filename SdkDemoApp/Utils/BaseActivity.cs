@@ -14,7 +14,7 @@ using Android.Content.PM;
 using Android;
 using System.Collections;
 
-namespace Utils
+namespace App.Utils
 {
     public class BaseActivity : AppCompatActivity
     {
@@ -29,7 +29,9 @@ namespace Utils
         {
             toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(App.Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
-            //Android.Support.V7.App.ActionBar actionBar = SupportActionBar;
+
+            Android.Support.V7.App.ActionBar actionBar = SupportActionBar;
+            actionBar.SetDisplayShowTitleEnabled(false);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

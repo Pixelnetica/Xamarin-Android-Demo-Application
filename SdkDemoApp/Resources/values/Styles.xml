@@ -2,7 +2,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
   
   <!-- Basic application theme -->
-  <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
     <item name="colorPrimary">@color/primary</item>
     <item name="colorPrimaryDark">@color/primary_dark</item>
     <item name="colorAccent">@color/accent</item>
@@ -25,14 +25,21 @@
   </style>
 
 
-  <!-- Common Toolbar theme -->
-  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+  <!-- Common Toolbar/AppBar theme -->
+  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-  <!-- Common Toolbar popup theme -->
-  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+  <!-- Toolbar popup theme -->
+  <style name="AppTheme.PopupOverlay" parent="AppTheme.AppBarOverlay"/>
+
+  <!-- Toolbar spinner popup theme -->
+  <style name="AppTheme.AppBarSpinnerPopup" parent="AppTheme.AppBarOverlay">
+    <item name="android:popupBackground">?attr/colorPrimary</item>
+    <item name="android:colorBackground">?attr/colorPrimary</item>
+  </style>
 
   <style name="AppActionBar" parent="AppTheme.AppBarOverlay">
-    <item name="android:displayOptions"></item>
+    <!-- Try to hide application title -->
+    <item name="android:displayOptions"/>
   </style>
 
 

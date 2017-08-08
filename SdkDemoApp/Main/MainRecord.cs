@@ -1,19 +1,16 @@
 ﻿using System;
-using Utils;
 using Android.Content;
 using Java.IO;
 using Android.Graphics;
 using ImageSdkWrapper;
 using Android.App;
 using Android.Util;
+using App.Utils;
 
-namespace App
+namespace App.Main
 {
     class MainRecord : Record
     {
-        private readonly Context applicationContext;
-        //private readonly ImageSdkThread sdkThread = new ImageSdkThread();
-
         Context context;
 
         // Perform long task
@@ -46,7 +43,7 @@ namespace App
 
         public MainRecord(Context context)
         {
-            this.context = context;
+            this.context = context.ApplicationContext;
             ImageSdkLibrary.Load((Application)this.context.ApplicationContext, null, 0);
         }
 

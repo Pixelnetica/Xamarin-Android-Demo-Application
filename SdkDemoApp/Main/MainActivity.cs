@@ -8,11 +8,14 @@ using Android;
 using Android.Widget;
 using Android.Views;
 using Android.Support.Design.Widget;
+using App.Utils;
+using App.Widget;
+using Android.Util;
 
-namespace App
+namespace App.Main
 {
     [Activity(Label = "@string/MainActivityTitle", MainLauncher = true, Icon = "@drawable/icon", Theme = "@style/AppTheme")]
-    public class MainActivity : Utils.BaseActivity  
+    public class MainActivity : BaseActivity  
     {
         MainRecord record;
         const string BUNDLE_MAIN_RECORD = "MAIN_RECORD";
@@ -22,8 +25,8 @@ namespace App
         ImageView imageView;
         Button btnOpen;
         Button btnShot;
-        Button btnEdit;
         Button btnCrop;
+        Spinner spnColor;
         Button btnSave;
         View progressHolder;
 
@@ -42,7 +45,7 @@ namespace App
             }
             else
             {
-                record = Utils.Record.ReadBundle<MainRecord>(bundle, BUNDLE_MAIN_RECORD);
+                record = Record.ReadBundle<MainRecord>(bundle, BUNDLE_MAIN_RECORD);
             }
 
             // Setup controls
@@ -51,12 +54,29 @@ namespace App
             btnOpen.Click += delegate { OpenImage(); };
             btnShot = FindViewById<Button>(Resource.Id.btn_take_photo);
             btnShot.Click += delegate { TakePhoto(); };
-            btnEdit = FindViewById<Button>(Resource.Id.btn_edit_image);
-            btnEdit.Click += delegate { EditImage(); };
             btnCrop = FindViewById<Button>(Resource.Id.btn_crop_image);
             btnCrop.Click += delegate { CropImage(); };
+
+            spnColor = FindViewById<Spinner>(Resource.Id.spn_color_mode);
+            spnColor.Adapter = new SimpleImageArrayAdapter(SupportActionBar.ThemedContext, new int[]
+            {
+                Resource.Drawable.ic_camera_singlemode_grey,
+                Resource.Drawable.ic_bw_cp_grey,
+                Resource.Drawable.ic_greyscale_cp_grey,
+                Resource.Drawable.ic_color_cp_grey,
+            });
+
+
+            // Restore spinner background overrided by "buttonBarButtonStyle"
+            Context context = SupportActionBar.ThemedContext;
+            var value = new TypedValue();
+            context.Theme.ResolveAttribute(Android.Resource.Attribute.SpinnerStyle, value, true);
+            var array = context.ObtainStyledAttributes(value.ResourceId, new int[] { Android.Resource.Attribute.Background });
+            spnColor.Background = array.GetDrawable(0);
+            array.Recycle();
+
             btnSave = FindViewById<Button>(Resource.Id.btn_save_image);
-            btnSave.Click += delegate {SaveImage(); };
+            btnSave.Click += delegate { SaveImage(); };
             progressHolder = FindViewById(Resource.Id.progress_holder);
 
             UpdateView();
@@ -145,7 +165,9 @@ namespace App
             progressHolder.Visibility = record.WaitMode ? ViewStates.Visible : ViewStates.Gone;
             imageView.SetImageBitmap(record.DisplayBitmap);
 
+            btnShot.Visibility = ViewStates.Gone;
             btnCrop.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
+
             btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;
 
             ShowError();

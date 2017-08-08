@@ -7,7 +7,7 @@ using Java.Util;
 using System;
 using System.Collections.Generic;
 
-namespace Utils
+namespace App.Utils
 {
     public class RuntimePermissions
     {

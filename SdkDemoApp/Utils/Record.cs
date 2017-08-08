@@ -4,7 +4,7 @@ using Android.Support.V4.App;
 using System;
 using System.Collections.Generic;
 
-namespace Utils
+namespace App.Utils
 {
     class Record : Binder
     {

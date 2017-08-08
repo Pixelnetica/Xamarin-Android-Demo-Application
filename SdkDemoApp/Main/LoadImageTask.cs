@@ -5,7 +5,7 @@ using Android.Util;
 using ImageSdkWrapper;
 using System;
 
-namespace App
+namespace App.Main
 {
     class LoadImageTask : AsyncTask<Android.Net.Uri, Java.Lang.Void, MetaImage>
     {
