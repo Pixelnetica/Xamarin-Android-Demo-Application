@@ -86,30 +86,4 @@ namespace App.Widget
 
         }
     }
-
-    public class ImageArrayAdapter : SimpleImageArrayAdapter
-    {
-        public ImageArrayAdapter(Context context, int[] imagesIds) : base(context, imagesIds)
-        {
-            
-        }
-
-        protected override View GetImageForPosition(int position, View convertView, ViewGroup parent, Context context)
-        {
-            View root;
-            if (convertView != null)
-            {
-                root = convertView;
-            }
-            else
-            {
-                LayoutInflater indflater = LayoutInflater.From(context);
-                root = indflater.Inflate(Resource.Layout.spinner_item, parent, false);
-            }
-            ImageView imageView = root.FindViewById<ImageView>(Resource.Id.image1);
-            imageView.SetImageResource((int)GetItem(position));
-
-            return root;
-        }
-    }
 }

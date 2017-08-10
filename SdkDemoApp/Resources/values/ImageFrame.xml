@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Custom attributes for ImageFrame -->
+  <declare-styleable name="ImageFrame">
+    <attr name="frameColor" format="color|reference"/>
+    <attr name="frameWidth" format="dimension"/>
+    <attr name="insideColor" format="color|reference"/>
+    <attr name="outsideColor" format="color|reference"/>
+    <attr name="showEmpty" format="boolean"/>
+  </declare-styleable>
+  
+  <!-- Default style for ImageFrame -->
+  <style name="ImageFrame">
+    <item name="frameColor">#FF00FF00</item>
+    <item name="frameWidth">2dp</item>
+    <item name="insideColor">@android:color/transparent</item>
+    <item name="outsideColor">@android:color/transparent</item>
+    <item name="showEmpty">true</item>
+  </style>
+</resources>

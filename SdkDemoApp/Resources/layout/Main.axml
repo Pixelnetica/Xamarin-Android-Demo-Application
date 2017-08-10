@@ -43,8 +43,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/primary_text"
-                    android:text="@string/btn_crop_image"
-                    android:id="@+id/btn_crop_image"
+                    android:text="@string/btn_edit_image"
+                    android:id="@+id/btn_edit_image"
                     android:drawableLeft="@drawable/ic_crop_black_24dp" />
                 <android.support.v7.widget.AppCompatSpinner
                     style="?attr/buttonBarButtonStyle"
@@ -84,6 +84,17 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/darker_gray"
                 android:scaleType="fitCenter" />
+          <App.Widget.ImageFrame
+            android:id="@+id/image_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:frameWidth="2dp"
+            app:frameColor="#C000FF00"
+            app:insideColor="@android:color/transparent"
+            app:outsideColor="#40FFFFFF"
+            />
+
+          
         <!-- Wait indicator -->
             <include
                 layout="@layout/Wait" />

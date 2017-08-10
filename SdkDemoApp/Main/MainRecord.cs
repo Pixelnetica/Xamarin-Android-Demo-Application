@@ -23,7 +23,6 @@ namespace App.Main
         {
             InitNothing,    // No image to show
             Source,         // Display source image
-            CropOrigin,     // Display source image with manual corners
             Target,         // Display processing result
         };
 
@@ -35,11 +34,9 @@ namespace App.Main
 
         Corners initCorners;    // Corners detected by SDK
         Corners userCorners;    // Corners modified by user
-        CropImageTask.Processing processing = CropImageTask.Processing.Gray;    // by default
+
+        Processing processing = Processing.Gray;    // by default
         MetaImage targetImage;  // 
-
-        MetaImage displayImage;   // current bitmap
-
 
         public MainRecord(Context context)
         {
@@ -51,7 +48,43 @@ namespace App.Main
         {
             get
             {
-                return MetaImage.SafeGetBitmap(displayImage);
+                switch (imageMode)
+                {
+                    case ImageState.InitNothing:
+                        return null;
+
+                    case ImageState.Source:
+                        return MetaImage.SafeGetBitmap(sourceImage);
+
+                    case ImageState.Target:
+                        return MetaImage.SafeGetBitmap(targetImage);
+
+                    default:
+                        throw new InvalidOperationException(string.Format("Illegal image mode {0}", imageMode));
+                }
+            }
+        }
+
+        public Corners DocumentCorners { get => userCorners; }
+
+        public PointF [] GetDocumentFrame()
+        {
+            Corners corners = DocumentCorners;
+            if (corners != null)
+            {
+                PointF[] pts = new PointF[]
+                {
+                    new PointF(corners.Points[0].X, corners.Points[0].Y),
+                    new PointF(corners.Points[1].X, corners.Points[1].Y),
+                    // IMPORTANT!
+                    new PointF(corners.Points[3].X, corners.Points[3].Y),
+                    new PointF(corners.Points[2].X, corners.Points[2].Y)
+                };
+                return pts;
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -95,24 +128,35 @@ namespace App.Main
         public void OpenSourceImage(Android.Net.Uri uri, Action callback)
         {
             // Reset previous
+            imageMode = ImageState.InitNothing;
             sourceImageUri = null;
+            MetaImage.SafeRecycleBitmap(sourceImage, null);
             sourceImage = null;
+            initCorners = userCorners = null;
+            MetaImage.SafeRecycleBitmap(targetImage, null);
+            targetImage = null;
+
+            // Reset error
             errorMessage = null;
 
             // Wait
             waitMode = true;
-            
+
+            GC.Collect();
+
             // Load in the thread
-            LoadImageTask task = new LoadImageTask(context.ContentResolver, (MetaImage image, string message) =>
+            LoadImageTask task = new LoadImageTask(context.ContentResolver, (LoadImageTask.Result result) =>
             {
                 // Store source
                 sourceImageUri = uri;
-                sourceImage = image;
+                sourceImage = result.Image;
 
+                // Store corners
+                initCorners = userCorners = result.Corners;
+                
                 // Display source
-                displayImage = sourceImage;
                 imageMode = ImageState.Source;
-                this.errorMessage = message;
+                errorMessage = result.Error;
                 waitMode = false;
 
                 // Notify Activity
@@ -121,46 +165,34 @@ namespace App.Main
             task.Execute(uri);
         }
 
-        public void OnCropImage(Action callback)
+        public void OnCropImage(Processing processing, Action callback)
         {
             if (sourceImage == null)
             {
                 Log.Error(AppLog.TAG, "Empty image for crop!");
+                return;
             }
 
+            MetaImage.SafeRecycleBitmap(targetImage, sourceImage);
             targetImage = null;
             errorMessage = null;
             waitMode = true;
 
-            CropImageTask task = new CropImageTask((CropImageTask.Job result, string errorMessage) =>
+            CropImageTask task = new CropImageTask((CropImageTask.Job result) =>
             {
                 waitMode = false;
-                this.errorMessage = errorMessage;
+                this.errorMessage = result.errorMessage;
 
                 if (string.IsNullOrEmpty(this.errorMessage))
                 {
-                    if (result.image == null)
-                    {
-                        // Corners not detected
-                        // Go to manual crop mode
-                        initCorners = result.corners;
-                        userCorners = Corners.SafeClone(initCorners);
-                        imageMode = ImageState.CropOrigin;
-                    }
-                    else
-                    {
-                        // Display target
-                        targetImage = result.image;
-                        displayImage = targetImage;
-                        imageMode = ImageState.Target;
-                    }
+                    // Display target
+                    targetImage = result.image;
+                    imageMode = ImageState.Target;
                 }
 
-                ExecuteOnVisible(callback);
-                
+                ExecuteOnVisible(callback);                
             });
             task.Execute(new CropImageTask.Job(sourceImage, false, userCorners, processing));
-
         }
     }
 }

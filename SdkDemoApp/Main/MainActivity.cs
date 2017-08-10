@@ -11,6 +11,10 @@ using Android.Support.Design.Widget;
 using App.Utils;
 using App.Widget;
 using Android.Util;
+using Android.Graphics;
+using static Android.Widget.AdapterView;
+using System;
+using System.Linq;
 
 namespace App.Main
 {
@@ -23,9 +27,10 @@ namespace App.Main
         private const int OPEN_SOURCE_IMAGE = 200;
 
         ImageView imageView;
+        ImageFrame imageFrame;
         Button btnOpen;
         Button btnShot;
-        Button btnCrop;
+        Button btnEdit;
         Spinner spnColor;
         Button btnSave;
         View progressHolder;
@@ -50,12 +55,13 @@ namespace App.Main
 
             // Setup controls
             imageView = FindViewById<ImageView>(Resource.Id.image_holder);
+            imageFrame = FindViewById<ImageFrame>(Resource.Id.image_frame);
             btnOpen = FindViewById<Button>(Resource.Id.btn_open_image);
             btnOpen.Click += delegate { OpenImage(); };
             btnShot = FindViewById<Button>(Resource.Id.btn_take_photo);
             btnShot.Click += delegate { TakePhoto(); };
-            btnCrop = FindViewById<Button>(Resource.Id.btn_crop_image);
-            btnCrop.Click += delegate { CropImage(); };
+            btnEdit = FindViewById<Button>(Resource.Id.btn_edit_image);
+            btnEdit.Click += delegate { EditImage(); };
 
             spnColor = FindViewById<Spinner>(Resource.Id.spn_color_mode);
             spnColor.Adapter = new SimpleImageArrayAdapter(SupportActionBar.ThemedContext, new int[]
@@ -75,11 +81,31 @@ namespace App.Main
             spnColor.Background = array.GetDrawable(0);
             array.Recycle();
 
+            spnColor.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(Spinner_ItemSelected);
+
             btnSave = FindViewById<Button>(Resource.Id.btn_save_image);
             btnSave.Click += delegate { SaveImage(); };
             progressHolder = FindViewById(Resource.Id.progress_holder);
 
             UpdateView();
+        }
+
+        private void Spinner_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
+        {
+            Spinner spinner = (Spinner)sender;
+            if (spinner == spnColor)
+            {
+                Processing[] items = new Processing[] { Processing.Original, Processing.BW, Processing.Gray, Processing.Color };
+                if (e.Position > 0 && e.Position < items.Length)
+                {
+                    CropImage(items[e.Position]);
+                }
+                else
+                {
+                    Log.Error(AppLog.TAG, "Unknown processing mode " + e.Position.ToString());
+                }
+            }
+
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
@@ -146,9 +172,9 @@ namespace App.Main
 
         }
 
-        private void CropImage()
+        private void CropImage(Processing processing)
         {
-            record.OnCropImage(() =>
+            record.OnCropImage(processing, () =>
             {
                 UpdateView();
             });
@@ -163,11 +189,27 @@ namespace App.Main
         private void UpdateView()
         {
             progressHolder.Visibility = record.WaitMode ? ViewStates.Visible : ViewStates.Gone;
+
+            // Setup image
             imageView.SetImageBitmap(record.DisplayBitmap);
 
-            btnShot.Visibility = ViewStates.Gone;
-            btnCrop.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
+            // Setup image frame
+            if (record.ImageMode == MainRecord.ImageState.Source)
+            {
+                imageFrame.ImageMatrix = imageView.ImageMatrix;
+                imageFrame.FramePoints = record.GetDocumentFrame();
+                imageFrame.ImageBounds = record.DisplayBitmap != null ? new RectF(imageView.Drawable.Bounds) : null;
+                imageFrame.Visibility = ViewStates.Visible;
+            }
+            else
+            {
+                imageFrame.Visibility = ViewStates.Gone;
+            }
 
+            // Setup buttons
+            btnShot.Visibility = ViewStates.Gone;
+            btnEdit.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
+            spnColor.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;
 
             ShowError();

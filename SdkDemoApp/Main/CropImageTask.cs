@@ -16,20 +16,13 @@ namespace App.Main
 {
     class CropImageTask : AsyncTask<CropImageTask.Job, Java.Lang.Void, CropImageTask.Job>
     {
-        public enum Processing
-        {
-            Original,   // Do nothing
-            BW,
-            Gray,
-            Color,
-        }
-
         public class Job
         {
             public readonly MetaImage image;
             public readonly bool strongShadows;
             public readonly Corners corners;
             public readonly Processing processing;
+            public readonly string errorMessage;
             public Job(MetaImage image, bool strongShadows, Corners corners, Processing processing)
             {
                 this.image = image;
@@ -37,13 +30,16 @@ namespace App.Main
                 this.corners = corners;
                 this.processing = processing;
             }
+            public Job(string errorMessage, Java.Lang.Throwable e = null)
+            {
+                this.errorMessage = errorMessage;
+                Log.Error(AppLog.TAG, this.errorMessage, e);
+            }
         }
 
-        readonly Action<Job, string> callback;
+        readonly Action<Job> callback;
 
-        string errorMessage;
-
-        public CropImageTask(Action<Job, string> callback)
+        public CropImageTask(Action<Job> callback)
         {
             this.callback = callback;
         }
@@ -56,27 +52,13 @@ namespace App.Main
                 // Working with ImageSDK
                 using (ImageProcessing sdk = new ImageSdkLibrary().NewProcessingInstance())
                 {
-                    // Detect corners if not specified
-                    Corners corners = inputJob.corners;
-                    if (corners == null)
-                    {
-                        Bundle args = new Bundle();
-                        corners = sdk.DetectDocumentCorners(inputJob.image, args);
-                        if (corners == null || !args.GetBoolean(ImageSdkLibrary.SdkIsSmartCrop))
-                        {
-                            // Not certian corners detection
-                            return new Job(null, inputJob.strongShadows, corners, inputJob.processing);
-                        }
-                    }
-
                     // Crop image
                     inputJob.image.StrongShadows = inputJob.strongShadows;
-                    MetaImage croppedImage = sdk.CorrectDocument(inputJob.image, corners);
+                    MetaImage croppedImage = sdk.CorrectDocument(inputJob.image, inputJob.corners);
                     if (croppedImage == null)
                     {
                         // Something wrong
-                        errorMessage = "Cannot crop input image";
-                        return null;
+                        return new Job("Cannot crop input image");
                     }
 
                     // Process
@@ -103,33 +85,29 @@ namespace App.Main
                     // Check processing error
                     if (targetImage == null)
                     {
-                        errorMessage = string.Format("Failed to perform processing {0}", inputJob.processing);
-                        return null;
+                        return new Job(string.Format("Failed to perform processing {0}", inputJob.processing));
                     }
 
                     // Cleanup
                     MetaImage.SafeRecycleBitmap(croppedImage, targetImage);
                     GC.Collect();
 
-                    return new Job(targetImage, inputJob.strongShadows, corners, inputJob.processing);
+                    return new Job(targetImage, inputJob.strongShadows, null, inputJob.processing);
                 }
             }
             catch (Java.Lang.OutOfMemoryError e)
             {
-                errorMessage = e.Message;
-                Log.Error(AppLog.TAG, errorMessage, e);
+                return new Job(e.Message, e);
             }
             catch (Java.Lang.Error e)
             {
-                errorMessage = e.Message;
-                Log.Error(AppLog.TAG, errorMessage, e);
+                return new Job(e.Message, e);
             }
-            return null;
         }
 
         protected override void OnPostExecute(Job result)
         {
-            callback(result, errorMessage);
+            callback(result);
         }
     }
 }

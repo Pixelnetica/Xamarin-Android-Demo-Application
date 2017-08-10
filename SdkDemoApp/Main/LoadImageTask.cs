@@ -3,21 +3,42 @@ using Android.Graphics;
 using Android.OS;
 using Android.Util;
 using ImageSdkWrapper;
+using Java.Lang;
 using System;
 
 namespace App.Main
 {
-    class LoadImageTask : AsyncTask<Android.Net.Uri, Java.Lang.Void, MetaImage>
+    class LoadImageTask : AsyncTask<Android.Net.Uri, Java.Lang.Void, LoadImageTask.Result>
     {
+        internal class Result
+        {
+            public readonly MetaImage Image;
+            public readonly Corners Corners;
+            public readonly string Error;
+
+            public Result(MetaImage image, Corners corners)
+            {
+                this.Image = image;
+                this.Corners = corners;
+            }
+
+            public Result(string error, Throwable e = null)
+            {
+                this.Error = error;
+                Log.Error(AppLog.TAG, error, e);
+            }
+
+            bool HasError { get => !string.IsNullOrEmpty(Error); }
+            bool HasCorners { get => this.Corners != null; }
+        }
         readonly ContentResolver cr;
-        readonly Action<MetaImage, string> callback;
-        string errorText;
-        internal LoadImageTask(ContentResolver cr, Action<MetaImage, string> callback)
+        readonly Action<Result> callback;
+        internal LoadImageTask(ContentResolver cr, Action<Result> callback)
         {
             this.cr = cr;
             this.callback = callback;
         }
-        protected override MetaImage RunInBackground(params Android.Net.Uri[] @params)
+        protected override Result RunInBackground(params Android.Net.Uri[] @params)
         {
             var imageUri = @params[0];
             try
@@ -30,9 +51,7 @@ namespace App.Main
                 }
                 if (sourceBitmap == null)
                 {
-                    errorText = string.Format("Cannot open image file {0}", imageUri);
-                    Log.Error(AppLog.TAG, errorText);
-                    return null;
+                    return new Result(string.Format("Cannot open image file {0}", imageUri));
                 }
 
                 // Scale image to supported size
@@ -58,32 +77,39 @@ namespace App.Main
 
                     // Free source image
                     MetaImage.SafeRecycleBitmap(sourceImage, originImage);
+
+                    // Try to detect document corners
+                    Bundle args = new Bundle();
+                    Corners corners = sdk.DetectDocumentCorners(originImage, args);
+                    if (!args.GetBoolean(ImageSdkLibrary.SdkIsSmartCrop))
+                    {
+                        corners = null;
+                    }
+
+                    // Free memory
                     GC.Collect();
-                    return originImage;
+
+                    // OK
+                    return new Result(originImage, corners);
                 }
             }
             catch (Java.IO.FileNotFoundException e)
             {
-                errorText = string.Format("Cannot locate image file {0}", imageUri);
-                Log.Error(AppLog.TAG, errorText, e);
+                return new Result(string.Format("Cannot locate image file {0}", imageUri));
             }
             catch (Java.Lang.OutOfMemoryError e)
             {
-                errorText = e.Message;
-                Log.Error(AppLog.TAG, errorText, e);
+                return new Result(e.Message, e);
             }
             catch (Java.Lang.Error e)
             {
-                errorText = e.Message;
-                Log.Error(AppLog.TAG, errorText, e);
+                return new Result(e.Message, e);
             }
-            return null;
-            
         }
 
-        protected override void OnPostExecute(MetaImage result)
+        protected override void OnPostExecute(Result result)
         {
-            callback(result, errorText);
+            callback(result);
         }
     }
 }
