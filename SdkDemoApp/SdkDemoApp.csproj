@@ -109,6 +109,7 @@
     <Compile Include="Main\LoadImageTask.cs" />
     <Compile Include="Main\MainActivity.cs" />
     <Compile Include="Main\MainRecord.cs" />
+    <Compile Include="Utils\GlobalLayoutListener.cs" />
     <Compile Include="Utils\Record.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

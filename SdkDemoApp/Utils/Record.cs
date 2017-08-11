@@ -16,8 +16,8 @@ namespace App.Utils
 
         public void ExecuteOnVisible(Action callback)
         {
-            uiHandler.Post(delegate
-            {
+            //uiHandler.Post(delegate
+            //{
                 if (visibleActivity == null)
                 {
                     // Store callback action if activity is not shown
@@ -28,15 +28,12 @@ namespace App.Utils
                     // Simple call
                     callback();
                 }
-            });
+            //});
         }
 
         public Activity VisibleActivity
         {
-            get
-            {
-                return visibleActivity;
-            }
+            get => visibleActivity;
             set
             {
                 this.visibleActivity = value;

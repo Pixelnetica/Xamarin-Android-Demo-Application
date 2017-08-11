@@ -66,18 +66,17 @@ namespace App.Main
             spnColor = FindViewById<Spinner>(Resource.Id.spn_color_mode);
             spnColor.Adapter = new SimpleImageArrayAdapter(SupportActionBar.ThemedContext, new int[]
             {
-                Resource.Drawable.ic_camera_singlemode_grey,
-                Resource.Drawable.ic_bw_cp_grey,
-                Resource.Drawable.ic_greyscale_cp_grey,
-                Resource.Drawable.ic_color_cp_grey,
+                Resource.Drawable.ic_camera_singlemode,
+                Resource.Drawable.ic_bw_cp,
+                Resource.Drawable.ic_greyscale_cp,
+                Resource.Drawable.ic_color_cp,
             });
 
 
-            // Restore spinner background overrided by "buttonBarButtonStyle"
-            Context context = SupportActionBar.ThemedContext;
-            var value = new TypedValue();
-            context.Theme.ResolveAttribute(Android.Resource.Attribute.SpinnerStyle, value, true);
-            var array = context.ObtainStyledAttributes(value.ResourceId, new int[] { Android.Resource.Attribute.Background });
+            // Restore spinner background overriden by "buttonBarButtonStyle"
+            var array = SupportActionBar.ThemedContext.ObtainStyledAttributes(
+                ResolveThemeAttribute(SupportActionBar.ThemedContext, Android.Resource.Attribute.SpinnerStyle),
+                new int[] { Android.Resource.Attribute.Background });
             spnColor.Background = array.GetDrawable(0);
             array.Recycle();
 
@@ -87,25 +86,30 @@ namespace App.Main
             btnSave.Click += delegate { SaveImage(); };
             progressHolder = FindViewById(Resource.Id.progress_holder);
 
-            UpdateView();
+            // Update views when layout complete
+            var observer = imageView.ViewTreeObserver;
+            observer.AddOnGlobalLayoutListener(new GlobalLayutListener(observer, () => { UpdateView(); }));            
         }
+
+        static readonly Processing[] processingItems = new Processing[] { Processing.Original, Processing.BW, Processing.Gray, Processing.Color };
 
         private void Spinner_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
         {
             Spinner spinner = (Spinner)sender;
             if (spinner == spnColor)
             {
-                Processing[] items = new Processing[] { Processing.Original, Processing.BW, Processing.Gray, Processing.Color };
-                if (e.Position > 0 && e.Position < items.Length)
+                if (CheckSpinnerClicked(spnColor))
                 {
-                    CropImage(items[e.Position]);
-                }
-                else
-                {
-                    Log.Error(AppLog.TAG, "Unknown processing mode " + e.Position.ToString());
+                    if (e.Position >= 0 && e.Position < processingItems.Length)
+                    {
+                        CropImage(processingItems[e.Position]);
+                    }
+                    else
+                    {
+                        Log.Error(AppLog.TAG, "Unknown processing mode " + e.Position.ToString());
+                    }
                 }
             }
-
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
@@ -164,12 +168,13 @@ namespace App.Main
 
         private void TakePhoto()
         {
-            Snackbar.Make(imageView, "Camera doesn't supported yet.", Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
+            Snackbar.Make(imageView, "Sorry. Camera doesn't supported yet.", Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
         }
 
         private void EditImage()
         {
-
+            record.OnShowSource(() => { UpdateView(); });
+            Snackbar.Make(imageView, "Sorry. Manual image editing doesn't supported yet.", Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
         }
 
         private void CropImage(Processing processing)
@@ -206,8 +211,9 @@ namespace App.Main
                 imageFrame.Visibility = ViewStates.Gone;
             }
 
+            SelectSpinnerPosition(spnColor, Array.IndexOf(processingItems, record.Processing));
+
             // Setup buttons
-            btnShot.Visibility = ViewStates.Gone;
             btnEdit.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             spnColor.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;

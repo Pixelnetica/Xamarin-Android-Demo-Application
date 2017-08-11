@@ -4212,6 +4212,9 @@ namespace App
 			// aapt resource value: 0x7f090116
 			public const int ThemeOverlay_AppCompat_Light = 2131296534;
 			
+			// aapt resource value: 0x7f090182
+			public const int ToolbarButtonBarStyle = 2131296642;
+			
 			// aapt resource value: 0x7f090117
 			public const int Widget_AppCompat_ActionBar = 2131296535;
 			

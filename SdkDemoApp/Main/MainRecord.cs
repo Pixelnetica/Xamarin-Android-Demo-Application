@@ -35,7 +35,7 @@ namespace App.Main
         Corners initCorners;    // Corners detected by SDK
         Corners userCorners;    // Corners modified by user
 
-        Processing processing = Processing.Gray;    // by default
+        Processing processing;
         MetaImage targetImage;  // 
 
         public MainRecord(Context context)
@@ -96,6 +96,8 @@ namespace App.Main
             }
         }
 
+        public Processing Processing { get => processing; }
+
         public bool WaitMode
         {
             get
@@ -127,12 +129,15 @@ namespace App.Main
 
         public void OpenSourceImage(Android.Net.Uri uri, Action callback)
         {
-            // Reset previous
+            // Reset Source
             imageMode = ImageState.InitNothing;
             sourceImageUri = null;
             MetaImage.SafeRecycleBitmap(sourceImage, null);
             sourceImage = null;
             initCorners = userCorners = null;
+
+            // Reset target
+            processing = Processing.Original;
             MetaImage.SafeRecycleBitmap(targetImage, null);
             targetImage = null;
 
@@ -165,7 +170,7 @@ namespace App.Main
             task.Execute(uri);
         }
 
-        public void OnCropImage(Processing processing, Action callback)
+        public void OnCropImage(Processing request, Action callback)
         {
             if (sourceImage == null)
             {
@@ -188,11 +193,25 @@ namespace App.Main
                     // Display target
                     targetImage = result.image;
                     imageMode = ImageState.Target;
+                    processing = result.processing;
                 }
 
                 ExecuteOnVisible(callback);                
             });
-            task.Execute(new CropImageTask.Job(sourceImage, false, userCorners, processing));
+            task.Execute(new CropImageTask.Job(sourceImage, false, userCorners, request));
+        }
+
+        public void OnShowSource(Action callback)
+        {
+            waitMode = false;
+            imageMode = ImageState.Source;
+
+            MetaImage.SafeRecycleBitmap(targetImage, sourceImage);
+            targetImage = null;
+            errorMessage = null;
+            processing = Processing.Original;
+
+            ExecuteOnVisible(callback);
         }
     }
 }
