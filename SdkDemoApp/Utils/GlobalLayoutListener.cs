@@ -5,21 +5,28 @@ namespace App.Utils
 {
     public class GlobalLayutListener : Java.Lang.Object, ViewTreeObserver.IOnGlobalLayoutListener
     {
-        private readonly ViewTreeObserver observer;
+        private readonly View observable;
         private readonly Action callback;
-        public GlobalLayutListener(ViewTreeObserver observer, Action callback)
+        private readonly bool oneTime;
+        private GlobalLayutListener(View observable, bool oneTime, Action callback)
         {
-            this.observer = observer;
+            this.observable = observable;
             this.callback = callback;
+            this.oneTime = oneTime;
         }
 
         public void OnGlobalLayout()
         {
             callback();
-            if (observer != null && observer.IsAlive)
+            if (oneTime)
             {
-                observer.RemoveOnGlobalLayoutListener(this);
+                observable.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
             }
+        }
+
+        public static void Install(View observable, bool oneTime, Action callback)
+        {
+            observable.ViewTreeObserver.AddOnGlobalLayoutListener(new GlobalLayutListener(observable, oneTime, callback));
         }
     }
 }

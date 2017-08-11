@@ -18,7 +18,7 @@
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-          <LinearLayout
+            <LinearLayout
                 style="?attr/buttonBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -30,6 +30,7 @@
                     android:text="@string/btn_open_image"
                     android:id="@+id/btn_open_image"
                     android:drawableLeft="@drawable/ic_description_white_24dp" />
+              <!--
                 <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
@@ -44,20 +45,20 @@
                     android:text="@string/btn_edit_image"
                     android:id="@+id/btn_edit_image"
                     android:drawableLeft="@drawable/ic_crop_white_24dp" />
-                <android.support.v7.widget.AppCompatSpinner
+                    -->
+                <App.Widget.SafeSpinner
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/spn_color_mode"
-                    app:popupTheme="@style/AppTheme.AppBarSpinnerPopup"
-                    />
+                    app:popupTheme="@style/AppTheme.AppBarSpinnerPopup" />
                 <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/btn_save_image"
                     android:id="@+id/btn_save_image"
-                    android:drawableLeft="@drawable/ic_action_save" />
+                    android:drawableLeft="@drawable/ic_save_white_24dp" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -81,17 +82,14 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/darker_gray"
                 android:scaleType="fitCenter" />
-          <App.Widget.ImageFrame
-            android:id="@+id/image_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:frameWidth="2dp"
-            app:frameColor="#C000FF00"
-            app:insideColor="@android:color/transparent"
-            app:outsideColor="#40FFFFFF"
-            />
-
-          
+            <App.Widget.ImageFrame
+                android:id="@+id/image_frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:frameWidth="2dp"
+                app:frameColor="#C000FF00"
+                app:insideColor="@android:color/transparent"
+                app:outsideColor="#40FFFFFF" />
         <!-- Wait indicator -->
             <include
                 layout="@layout/Wait" />

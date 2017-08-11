@@ -29,4 +29,9 @@
   <string name="about_title">Crop Demo</string>
   <string name="about_message">Version %1$s&lt;br&gt;See more on &lt;a href=&quot;http://www.pixelnetica.com&quot;&gt;Pixelnetica website&lt;/a&gt;</string>
   <string name="about_ok">OK</string>
+  <string name="processing_source">Source</string>
+  <string name="processing_origin">Original</string>
+  <string name="processing_bw">B&amp;W</string>
+  <string name="processing_gray">Gray</string>
+  <string name="processing_color">Color</string>
 </resources>

@@ -29,9 +29,9 @@ namespace App.Main
         ImageView imageView;
         ImageFrame imageFrame;
         Button btnOpen;
-        Button btnShot;
-        Button btnEdit;
-        Spinner spnColor;
+        //Button btnShot;
+        //Button btnEdit;
+        SafeSpinner spnColor;
         Button btnSave;
         View progressHolder;
 
@@ -58,57 +58,58 @@ namespace App.Main
             imageFrame = FindViewById<ImageFrame>(Resource.Id.image_frame);
             btnOpen = FindViewById<Button>(Resource.Id.btn_open_image);
             btnOpen.Click += delegate { OpenImage(); };
-            btnShot = FindViewById<Button>(Resource.Id.btn_take_photo);
-            btnShot.Click += delegate { TakePhoto(); };
-            btnEdit = FindViewById<Button>(Resource.Id.btn_edit_image);
-            btnEdit.Click += delegate { EditImage(); };
+            //btnShot = FindViewById<Button>(Resource.Id.btn_take_photo);
+            //btnShot.Click += delegate { TakePhoto(); };
+            //btnEdit = FindViewById<Button>(Resource.Id.btn_edit_image);
+            //btnEdit.Click += delegate { EditImage(); };
 
-            spnColor = FindViewById<Spinner>(Resource.Id.spn_color_mode);
-            spnColor.Adapter = new SimpleImageArrayAdapter(SupportActionBar.ThemedContext, new int[]
+            spnColor = FindViewById<SafeSpinner>(Resource.Id.spn_color_mode);
+            /*spnColor.Adapter = new SimpleImageArrayAdapter(SupportActionBar.ThemedContext, new int[]
             {
+                Resource.Drawable.ic_description_white_24dp,
                 Resource.Drawable.ic_camera_singlemode,
                 Resource.Drawable.ic_bw_cp,
                 Resource.Drawable.ic_greyscale_cp,
                 Resource.Drawable.ic_color_cp,
-            });
+            });*/
+            spnColor.Adapter = new ImageTextSpinnerAdapter(SupportActionBar.ThemedContext, new ImageTextSpinnerAdapter.Item[]
+                {
+                    new ImageTextSpinnerAdapter.Item(Resource.Drawable.ic_description_white_24dp, Resource.String.processing_source),
+                    new ImageTextSpinnerAdapter.Item(Resource.Drawable.ic_camera_singlemode, Resource.String.processing_origin),
+                    new ImageTextSpinnerAdapter.Item(Resource.Drawable.ic_bw_cp, Resource.String.processing_bw),
+                    new ImageTextSpinnerAdapter.Item(Resource.Drawable.ic_greyscale_cp, Resource.String.processing_gray),
+                    new ImageTextSpinnerAdapter.Item(Resource.Drawable.ic_color_cp, Resource.String.processing_color),
+                });
+            spnColor.ItemUserSelected = OnColorItemSelected;
+            spnColor.RestoreStyleBackground(SupportActionBar.ThemedContext);
 
-
-            // Restore spinner background overriden by "buttonBarButtonStyle"
-            var array = SupportActionBar.ThemedContext.ObtainStyledAttributes(
-                ResolveThemeAttribute(SupportActionBar.ThemedContext, Android.Resource.Attribute.SpinnerStyle),
-                new int[] { Android.Resource.Attribute.Background });
-            spnColor.Background = array.GetDrawable(0);
-            array.Recycle();
-
-            spnColor.ItemSelected += new EventHandler<AdapterView.ItemSelectedEventArgs>(Spinner_ItemSelected);
+            //SpinnerHelper.RestoreBackground(SupportActionBar.ThemedContext, spnColor);
+            //spinnerHelper.AddSpinner(spnColor, new SpinnerHelper.OnItemSelected(OnColorItemSelected));
 
             btnSave = FindViewById<Button>(Resource.Id.btn_save_image);
             btnSave.Click += delegate { SaveImage(); };
             progressHolder = FindViewById(Resource.Id.progress_holder);
 
             // Update views when layout complete
-            var observer = imageView.ViewTreeObserver;
-            observer.AddOnGlobalLayoutListener(new GlobalLayutListener(observer, () => { UpdateView(); }));            
+            GlobalLayutListener.Install(imageView, true, () => { UpdateView(); });
         }
 
         static readonly Processing[] processingItems = new Processing[] { Processing.Original, Processing.BW, Processing.Gray, Processing.Color };
 
-        private void Spinner_ItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
+        private void OnColorItemSelected(Spinner spinner, int position, long id)
         {
-            Spinner spinner = (Spinner)sender;
-            if (spinner == spnColor)
+            if (position == 0)
             {
-                if (CheckSpinnerClicked(spnColor))
-                {
-                    if (e.Position >= 0 && e.Position < processingItems.Length)
-                    {
-                        CropImage(processingItems[e.Position]);
-                    }
-                    else
-                    {
-                        Log.Error(AppLog.TAG, "Unknown processing mode " + e.Position.ToString());
-                    }
-                }
+                // Special case: reset to source
+                ShowSource();
+            }
+            else if (position > 0 && position <= processingItems.Length)
+            {
+                CropImage(processingItems[position-1]);
+            }
+            else
+            {
+                Log.Error(AppLog.TAG, "Unknown processing mode " + position.ToString());
             }
         }
 
@@ -171,9 +172,14 @@ namespace App.Main
             Snackbar.Make(imageView, "Sorry. Camera doesn't supported yet.", Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
         }
 
-        private void EditImage()
+        private void ShowSource()
         {
             record.OnShowSource(() => { UpdateView(); });
+        }
+
+        private void EditImage()
+        {
+            ShowSource();
             Snackbar.Make(imageView, "Sorry. Manual image editing doesn't supported yet.", Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
         }
 
@@ -211,10 +217,11 @@ namespace App.Main
                 imageFrame.Visibility = ViewStates.Gone;
             }
 
-            SelectSpinnerPosition(spnColor, Array.IndexOf(processingItems, record.Processing));
+            // NOTE: Using "Special" image mode to prevent spinner blinking
+            spnColor.SelectPosition(record.DisplayImageMode == MainRecord.ImageState.Target ? Array.IndexOf(processingItems, record.Processing) + 1 : 0);
 
             // Setup buttons
-            btnEdit.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
+            //btnEdit.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             spnColor.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;
 

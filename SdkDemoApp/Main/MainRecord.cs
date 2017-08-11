@@ -36,7 +36,8 @@ namespace App.Main
         Corners userCorners;    // Corners modified by user
 
         Processing processing;
-        MetaImage targetImage;  // 
+        MetaImage targetImage;
+        bool inCropTask;
 
         public MainRecord(Context context)
         {
@@ -88,13 +89,10 @@ namespace App.Main
             }
         }
 
-        public ImageState ImageMode
-        {
-            get
-            {
-                return imageMode;
-            }
-        }
+        public ImageState ImageMode { get => imageMode; }
+        
+        // Special case to prevent spinner blinking
+        public ImageState DisplayImageMode { get => inCropTask ? ImageState.Target : imageMode; }
 
         public Processing Processing { get => processing; }
 
@@ -178,15 +176,19 @@ namespace App.Main
                 return;
             }
 
+            processing = request;
             MetaImage.SafeRecycleBitmap(targetImage, sourceImage);
             targetImage = null;
             errorMessage = null;
             waitMode = true;
 
+            inCropTask = true;
+
             CropImageTask task = new CropImageTask((CropImageTask.Job result) =>
             {
                 waitMode = false;
                 this.errorMessage = result.errorMessage;
+                inCropTask = false;
 
                 if (string.IsNullOrEmpty(this.errorMessage))
                 {

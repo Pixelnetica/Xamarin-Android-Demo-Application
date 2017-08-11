@@ -70,33 +70,5 @@ namespace App.Utils
 
             StartActivityForResult(Intent.CreateChooser(intent, title), requestCode);
         }
-
-        public static int ResolveThemeAttribute(Context context, int resId)
-        {
-            var attribute = new TypedValue();
-            context.Theme.ResolveAttribute(resId, attribute, true);
-            return attribute.ResourceId;
-        }
-
-        // Workarround bad spinner selection/events behaviour
-        private readonly Dictionary<Spinner, bool> spinnerClick = new Dictionary<Spinner, bool>();
-
-        public void SelectSpinnerPosition(Spinner spinner, int position)
-        {
-            if (spinner.SelectedItemPosition != position)
-            {
-                spinnerClick[spinner] = false;
-                spinner.SetSelection(position, true);
-            }
-        }
-
-        public bool CheckSpinnerClicked(Spinner spinner)
-        {
-            bool clicked = false;
-            spinnerClick.TryGetValue(spinner, out clicked);
-            spinnerClick[spinner] = true;
-            return clicked;
-        }
-
     }
 }
