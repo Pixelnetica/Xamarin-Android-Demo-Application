@@ -6,10 +6,11 @@ using ImageSdkWrapper;
 using Android.App;
 using Android.Util;
 using App.Utils;
+using System.Collections.Generic;
 
 namespace App.Main
 {
-    class MainRecord : Record
+    class MainRecord : Record<MainActivity>
     {
         Context context;
 
@@ -17,7 +18,7 @@ namespace App.Main
         bool waitMode;
 
         // Store error message
-        string errorMessage;
+        readonly List<Message> messages = new List<Message>();
 
         public enum ImageState
         {
@@ -39,10 +40,10 @@ namespace App.Main
         MetaImage targetImage;
         bool inCropTask;
 
-        public MainRecord(Context context)
+        public MainRecord(Activity activity)
         {
-            this.context = context.ApplicationContext;
-            ImageSdkLibrary.Load((Application)this.context.ApplicationContext, null, 0);
+            context = activity.ApplicationContext;
+            ImageSdkLibrary.Load((Application)context, null, 0);
         }
 
         public Bitmap DisplayBitmap
@@ -96,36 +97,18 @@ namespace App.Main
 
         public Processing Processing { get => processing; }
 
-        public bool WaitMode
+        public bool WaitMode { get => waitMode; }
+
+        public bool HasMessages { get => messages.Count != 0; }
+
+        public Message [] WithdrawMessages()
         {
-            get
-            {
-                return waitMode;
-            }
+            var output = messages.ToArray();
+            messages.Clear();
+            return output;
         }
 
-        public bool HasError
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(errorMessage);
-            }
-        }
-
-        public string ErrorMessage
-        {
-            get
-            {
-                return errorMessage;
-            }
-        }
-
-        public void ResetError()
-        {
-            errorMessage = null;
-        }
-
-        public void OpenSourceImage(Android.Net.Uri uri, Action callback)
+        public void OpenSourceImage(Android.Net.Uri uri, Callback callback)
         {
             // Reset Source
             imageMode = ImageState.InitNothing;
@@ -139,8 +122,8 @@ namespace App.Main
             MetaImage.SafeRecycleBitmap(targetImage, null);
             targetImage = null;
 
-            // Reset error
-            errorMessage = null;
+            // Reset messages
+            messages.Clear();
 
             // Wait
             waitMode = true;
@@ -159,7 +142,18 @@ namespace App.Main
                 
                 // Display source
                 imageMode = ImageState.Source;
-                errorMessage = result.Error;
+
+                // Build message
+                if (result.HasError)
+                {
+                    messages.Add(new Message(Message.TypeError, result.Error));
+                }
+                else
+                {
+                    // Add profilers
+                    messages.Add(new Message(result.Profiler.Id, new object[] { result.Profiler.Total }));
+                }
+
                 waitMode = false;
 
                 // Notify Activity
@@ -168,7 +162,7 @@ namespace App.Main
             task.Execute(uri);
         }
 
-        public void OnCropImage(Processing request, Action callback)
+        public void OnCropImage(Processing request, Callback callback)
         {
             if (sourceImage == null)
             {
@@ -179,7 +173,7 @@ namespace App.Main
             processing = request;
             MetaImage.SafeRecycleBitmap(targetImage, sourceImage);
             targetImage = null;
-            errorMessage = null;
+            messages.Clear();
             waitMode = true;
 
             inCropTask = true;
@@ -187,15 +181,23 @@ namespace App.Main
             CropImageTask task = new CropImageTask((CropImageTask.Job result) =>
             {
                 waitMode = false;
-                this.errorMessage = result.errorMessage;
+                if (result.HasError)
                 inCropTask = false;
 
-                if (string.IsNullOrEmpty(this.errorMessage))
+                if (result.HasError)
+                {
+                    messages.Add(new Message(Message.TypeError, result.errorMessage));
+                }
+                else
                 {
                     // Display target
                     targetImage = result.image;
                     imageMode = ImageState.Target;
                     processing = result.processing;
+                    foreach (Profiler p in result.profilers)
+                    {
+                        messages.Add(new Message(p.Id, new object[] { p.Total }));
+                    }
                 }
 
                 ExecuteOnVisible(callback);                
@@ -203,15 +205,15 @@ namespace App.Main
             task.Execute(new CropImageTask.Job(sourceImage, false, userCorners, request));
         }
 
-        public void OnShowSource(Action callback)
+        public void OnShowSource(Callback callback)
         {
             waitMode = false;
             imageMode = ImageState.Source;
 
             MetaImage.SafeRecycleBitmap(targetImage, sourceImage);
             targetImage = null;
-            errorMessage = null;
             processing = Processing.Original;
+            messages.Clear();
 
             ExecuteOnVisible(callback);
         }

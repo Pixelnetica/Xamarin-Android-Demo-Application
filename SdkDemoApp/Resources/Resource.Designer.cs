@@ -2329,9 +2329,6 @@ namespace App
 			// aapt resource value: 0x7f07008c
 			public const int action_image = 2131165324;
 			
-			// aapt resource value: 0x7f0700a7
-			public const int action_manual_crop = 2131165351;
-			
 			// aapt resource value: 0x7f070003
 			public const int action_menu_divider = 2131165187;
 			
@@ -2347,26 +2344,8 @@ namespace App
 			// aapt resource value: 0x7f070043
 			public const int action_mode_close_button = 2131165251;
 			
-			// aapt resource value: 0x7f0700ab
-			public const int action_profile_bwbinarization = 2131165355;
-			
 			// aapt resource value: 0x7f0700ad
-			public const int action_profile_colorbinarization = 2131165357;
-			
-			// aapt resource value: 0x7f0700ac
-			public const int action_profile_graybinarization = 2131165356;
-			
-			// aapt resource value: 0x7f0700a9
-			public const int action_profile_group = 2131165353;
-			
-			// aapt resource value: 0x7f0700aa
-			public const int action_profile_nobinarization = 2131165354;
-			
-			// aapt resource value: 0x7f0700a6
-			public const int action_settings = 2131165350;
-			
-			// aapt resource value: 0x7f0700a8
-			public const int action_strong_shadows = 2131165352;
+			public const int action_strong_shadows = 2131165357;
 			
 			// aapt resource value: 0x7f07008d
 			public const int action_text = 2131165325;
@@ -2569,8 +2548,8 @@ namespace App
 			// aapt resource value: 0x7f070048
 			public const int list_item = 2131165256;
 			
-			// aapt resource value: 0x7f0700a5
-			public const int masked = 2131165349;
+			// aapt resource value: 0x7f0700ac
+			public const int masked = 2131165356;
 			
 			// aapt resource value: 0x7f070091
 			public const int media_actions = 2131165329;
@@ -2617,14 +2596,14 @@ namespace App
 			// aapt resource value: 0x7f070006
 			public const int progress_circular = 2131165190;
 			
-			// aapt resource value: 0x7f0700a2
-			public const int progress_holder = 2131165346;
+			// aapt resource value: 0x7f0700a9
+			public const int progress_holder = 2131165353;
 			
 			// aapt resource value: 0x7f070007
 			public const int progress_horizontal = 2131165191;
 			
-			// aapt resource value: 0x7f0700a3
-			public const int progress_wait = 2131165347;
+			// aapt resource value: 0x7f0700aa
+			public const int progress_wait = 2131165354;
 			
 			// aapt resource value: 0x7f07005d
 			public const int radio = 2131165277;
@@ -2637,6 +2616,27 @@ namespace App
 			
 			// aapt resource value: 0x7f070095
 			public const int right_side = 2131165333;
+			
+			// aapt resource value: 0x7f0700a6
+			public const int save_imagesdk_pdf = 2131165350;
+			
+			// aapt resource value: 0x7f0700a5
+			public const int save_imagesdk_png = 2131165349;
+			
+			// aapt resource value: 0x7f0700a7
+			public const int save_imagesdk_tiff = 2131165351;
+			
+			// aapt resource value: 0x7f0700a8
+			public const int save_multi_pages = 2131165352;
+			
+			// aapt resource value: 0x7f0700a3
+			public const int save_system_jpeg = 2131165347;
+			
+			// aapt resource value: 0x7f0700a4
+			public const int save_system_png = 2131165348;
+			
+			// aapt resource value: 0x7f0700a2
+			public const int save_writer_type = 2131165346;
 			
 			// aapt resource value: 0x7f07001b
 			public const int screen = 2131165211;
@@ -2806,8 +2806,8 @@ namespace App
 			// aapt resource value: 0x7f07000e
 			public const int view_offset_helper = 2131165198;
 			
-			// aapt resource value: 0x7f0700a4
-			public const int visible = 2131165348;
+			// aapt resource value: 0x7f0700ab
+			public const int visible = 2131165355;
 			
 			// aapt resource value: 0x7f070027
 			public const int withText = 2131165223;
@@ -3049,19 +3049,22 @@ namespace App
 			public const int notification_template_part_time = 2130903099;
 			
 			// aapt resource value: 0x7f03003c
-			public const int select_dialog_item_material = 2130903100;
+			public const int Save = 2130903100;
 			
 			// aapt resource value: 0x7f03003d
-			public const int select_dialog_multichoice_material = 2130903101;
+			public const int select_dialog_item_material = 2130903101;
 			
 			// aapt resource value: 0x7f03003e
-			public const int select_dialog_singlechoice_material = 2130903102;
+			public const int select_dialog_multichoice_material = 2130903102;
 			
 			// aapt resource value: 0x7f03003f
-			public const int support_simple_spinner_dropdown_item = 2130903103;
+			public const int select_dialog_singlechoice_material = 2130903103;
 			
 			// aapt resource value: 0x7f030040
-			public const int Wait = 2130903104;
+			public const int support_simple_spinner_dropdown_item = 2130903104;
+			
+			// aapt resource value: 0x7f030041
+			public const int Wait = 2130903105;
 			
 			static Layout()
 			{
@@ -3308,6 +3311,36 @@ namespace App
 			// aapt resource value: 0x7f080046
 			public const int processing_source = 2131230790;
 			
+			// aapt resource value: 0x7f080054
+			public const int profile_binarization = 2131230804;
+			
+			// aapt resource value: 0x7f080053
+			public const int profile_correct_document = 2131230803;
+			
+			// aapt resource value: 0x7f080052
+			public const int profile_detect_corners = 2131230802;
+			
+			// aapt resource value: 0x7f08004f
+			public const int save_imagesdk_pdf = 2131230799;
+			
+			// aapt resource value: 0x7f08004e
+			public const int save_imagesdk_png = 2131230798;
+			
+			// aapt resource value: 0x7f080050
+			public const int save_imagesdk_tiff = 2131230800;
+			
+			// aapt resource value: 0x7f080051
+			public const int save_multi_pages = 2131230801;
+			
+			// aapt resource value: 0x7f08004c
+			public const int save_system_jpeg = 2131230796;
+			
+			// aapt resource value: 0x7f08004d
+			public const int save_system_png = 2131230797;
+			
+			// aapt resource value: 0x7f08004b
+			public const int save_title = 2131230795;
+			
 			// aapt resource value: 0x7f080013
 			public const int search_menu_title = 2131230739;
 			
@@ -3362,6 +3395,12 @@ namespace App
 			
 			// aapt resource value: 0x7f090180
 			public const int AppTheme_AppBarSpinnerPopup = 2131296640;
+			
+			// aapt resource value: 0x7f090183
+			public const int AppTheme_Dialog = 2131296643;
+			
+			// aapt resource value: 0x7f090184
+			public const int AppTheme_Dialog_Alert = 2131296644;
 			
 			// aapt resource value: 0x7f09017f
 			public const int AppTheme_PopupOverlay = 2131296639;

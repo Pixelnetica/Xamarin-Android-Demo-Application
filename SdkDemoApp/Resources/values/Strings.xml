@@ -34,4 +34,15 @@
   <string name="processing_bw">B&amp;W</string>
   <string name="processing_gray">Gray</string>
   <string name="processing_color">Color</string>
+  <string name="save_title">Save</string>
+  <string name="save_system_jpeg">System JPEG</string>
+  <string name="save_system_png">System PNG</string>
+  <string name="save_imagesdk_png">Image SDK PNG</string>
+  <string name="save_imagesdk_pdf">Image SDK PDF</string>
+  <string name="save_imagesdk_tiff">Image SDK TIFF</string>
+  <string name="save_multi_pages">Simulate multi-pages</string>
+  <!-- NOTE: .Net format notice -->
+  <string name="profile_detect_corners">Corners was detected in {0:D} ms</string>
+  <string name="profile_correct_document">Document was cropped in {0:D} ms</string>
+  <string name="profile_binarization">Document was processed in {0:D} ms</string>
 </resources>

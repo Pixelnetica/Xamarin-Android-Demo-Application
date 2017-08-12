@@ -18,6 +18,9 @@ using System.Linq;
 
 namespace App.Main
 {
+    using AlertDialog = Android.Support.V7.App.AlertDialog;
+    using Message = App.Utils.Message;
+
     [Activity(Label = "@string/MainActivityTitle", MainLauncher = true, Icon = "@drawable/icon", Theme = "@style/AppTheme")]
     public class MainActivity : BaseActivity  
     {
@@ -35,6 +38,14 @@ namespace App.Main
         Button btnSave;
         View progressHolder;
 
+        private class UpdateCallback : MainRecord.Callback
+        {
+            public void Run(MainActivity activity)
+            {
+                activity.UpdateView();
+            }
+        }
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -46,11 +57,11 @@ namespace App.Main
 
             if (bundle == null)
             {
-                record = new MainRecord(ApplicationContext);
+                record = new MainRecord(this);
             }
             else
             {
-                record = Record.ReadBundle<MainRecord>(bundle, BUNDLE_MAIN_RECORD);
+                record = MainRecord.ReadBundle<MainRecord>(bundle, BUNDLE_MAIN_RECORD);
             }
 
             // Setup controls
@@ -119,16 +130,16 @@ namespace App.Main
             record.WriteBundle(outState, BUNDLE_MAIN_RECORD);
         }
 
-        protected override void OnPause()
+        protected override void OnStart()
         {
-            base.OnPause();
-            record.VisibleActivity = null;
+            base.OnStart();
+            record.VisibleActivity = this;
         }
 
-        protected override void OnResume()
+        protected override void OnStop()
         {
-            base.OnResume();
-            record.VisibleActivity = this;
+            record.VisibleActivity = null;
+            base.OnStop();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -154,10 +165,7 @@ namespace App.Main
         
         private void OnOpenImage(Android.Net.Uri imageUri)
         {
-            record.OpenSourceImage(imageUri, () =>
-            {
-                UpdateView();
-            });
+            record.OpenSourceImage(imageUri, new UpdateCallback());
             UpdateView();
 
         }
@@ -174,7 +182,7 @@ namespace App.Main
 
         private void ShowSource()
         {
-            record.OnShowSource(() => { UpdateView(); });
+            record.OnShowSource(new UpdateCallback());
         }
 
         private void EditImage()
@@ -185,16 +193,31 @@ namespace App.Main
 
         private void CropImage(Processing processing)
         {
-            record.OnCropImage(processing, () =>
-            {
-                UpdateView();
-            });
+            record.OnCropImage(processing, new UpdateCallback());
             UpdateView();
         }
 
         private void SaveImage()
         {
+            SaveDialogFragment dialog = new SaveDialogFragment();
+            dialog.Show(SupportFragmentManager, "Save");
+            /*
+            var builder = new AlertDialog.Builder(this, Resource.Style.Theme_AppCompat_Dialog_Alert);
+            builder.SetTitle(Resource.String.save_title);
+            builder.SetIcon(Resource.Drawable.ic_save_white_24dp);
 
+            //var builderContext = builder.Context;
+            var inflater = LayoutInflater.From(builder.Context);
+            View view = inflater.Inflate(Resource.Layout.Save, null);
+            builder.SetView(view);
+
+            builder.SetPositiveButton(Android.Resource.String.Ok, (object sender, DialogClickEventArgs e) =>
+            {
+
+            });
+
+            builder.Show();
+            */
         }
 
         private void UpdateView()
@@ -223,17 +246,30 @@ namespace App.Main
             // Setup buttons
             //btnEdit.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             spnColor.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
-            btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;
+            //btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;
 
-            ShowError();
+            ShowMessages();
         }
 
-        private void ShowError()
+        private void ShowMessages()
         {
-            if (record.HasError)
+            if (record.HasMessages)
             {
-                Snackbar.Make(imageView, record.ErrorMessage, Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
-                record.ResetError();
+                var text = new System.Text.StringBuilder();
+                int tail = 0;
+                foreach (Message msg in record.WithdrawMessages())
+                {
+                    string format = msg.Id != 0 ? GetString(msg.Id) : "{0}";                    
+                    text.Append(string.Format(format, msg.Arguments));
+                    tail = text.Length;
+                    text.Append("\r\n");
+                }
+                text.Remove(tail, text.Length - tail);
+
+                if (text.Length != 0)
+                {
+                    Snackbar.Make(imageView, text.ToString(), Snackbar.LengthIndefinite).SetAction(Resource.String.action_close, (View view) => { }).Show();
+                }
             }
         }
     }

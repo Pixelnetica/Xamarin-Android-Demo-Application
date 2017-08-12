@@ -2,6 +2,7 @@
 using Android.Graphics;
 using Android.OS;
 using Android.Util;
+using App.Utils;
 using ImageSdkWrapper;
 using Java.Lang;
 using System;
@@ -14,12 +15,14 @@ namespace App.Main
         {
             public readonly MetaImage Image;
             public readonly Corners Corners;
+            public readonly Profiler Profiler;
             public readonly string Error;
 
-            public Result(MetaImage image, Corners corners)
+            public Result(MetaImage image, Corners corners, Profiler profiler)
             {
-                this.Image = image;
-                this.Corners = corners;
+                Image = image;
+                Corners = corners;
+                Profiler = profiler;
             }
 
             public Result(string error, Throwable e = null)
@@ -28,8 +31,8 @@ namespace App.Main
                 Log.Error(AppLog.TAG, error, e);
             }
 
-            bool HasError { get => !string.IsNullOrEmpty(Error); }
-            bool HasCorners { get => this.Corners != null; }
+            public bool HasError { get => !string.IsNullOrEmpty(Error); }
+            public bool HasCorners { get => this.Corners != null; }
         }
         readonly ContentResolver cr;
         readonly Action<Result> callback;
@@ -80,7 +83,10 @@ namespace App.Main
 
                     // Try to detect document corners
                     Bundle args = new Bundle();
+                    int start = System.Environment.TickCount;
+                    var profiler = new Profiler(Resource.String.profile_detect_corners);
                     Corners corners = sdk.DetectDocumentCorners(originImage, args);
+                    profiler.Finish();
                     if (!args.GetBoolean(ImageSdkLibrary.SdkIsSmartCrop))
                     {
                         corners = null;
@@ -90,7 +96,7 @@ namespace App.Main
                     GC.Collect();
 
                     // OK
-                    return new Result(originImage, corners);
+                    return new Result(originImage, corners, profiler);
                 }
             }
             catch (Java.IO.FileNotFoundException e)

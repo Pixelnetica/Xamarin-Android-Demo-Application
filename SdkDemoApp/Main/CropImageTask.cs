@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using ImageSdkWrapper;
 using Android.Util;
+using App.Utils;
 
 namespace App.Main
 {
@@ -23,18 +24,21 @@ namespace App.Main
             public readonly Corners corners;
             public readonly Processing processing;
             public readonly string errorMessage;
-            public Job(MetaImage image, bool strongShadows, Corners corners, Processing processing)
+            public readonly Profiler[] profilers;
+            public Job(MetaImage image, bool strongShadows, Corners corners, Processing processing, Profiler [] profilers = null)
             {
                 this.image = image;
                 this.strongShadows = strongShadows;
                 this.corners = corners;
                 this.processing = processing;
+                this.profilers = profilers;
             }
             public Job(string errorMessage, Java.Lang.Throwable e = null)
             {
                 this.errorMessage = errorMessage;
                 Log.Error(AppLog.TAG, this.errorMessage, e);
             }
+            public bool HasError { get => !string.IsNullOrEmpty(errorMessage); }
         }
 
         readonly Action<Job> callback;
@@ -54,7 +58,9 @@ namespace App.Main
                 {
                     // Crop image
                     inputJob.image.StrongShadows = inputJob.strongShadows;
+                    var profilerCrop = new Profiler(Resource.String.profile_correct_document);
                     MetaImage croppedImage = sdk.CorrectDocument(inputJob.image, inputJob.corners);
+                    profilerCrop.Finish();
                     if (croppedImage == null)
                     {
                         // Something wrong
@@ -63,6 +69,7 @@ namespace App.Main
 
                     // Process
                     MetaImage targetImage = null;
+                    var profilerProcessing = new Profiler(Resource.String.profile_binarization);
                     switch (inputJob.processing)
                     {
                         case Processing.Original:
@@ -81,6 +88,7 @@ namespace App.Main
                             targetImage = sdk.ImageColorBinarization(croppedImage);
                             break;
                     }
+                    profilerProcessing.Finish();
 
                     // Check processing error
                     if (targetImage == null)
@@ -92,7 +100,8 @@ namespace App.Main
                     MetaImage.SafeRecycleBitmap(croppedImage, targetImage);
                     GC.Collect();
 
-                    return new Job(targetImage, inputJob.strongShadows, null, inputJob.processing);
+                    return new Job(targetImage, inputJob.strongShadows, null, inputJob.processing,
+                        new Profiler[] { profilerCrop, profilerProcessing } );
                 }
             }
             catch (Java.Lang.OutOfMemoryError e)

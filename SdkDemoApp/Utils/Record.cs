@@ -6,15 +6,20 @@ using System.Collections.Generic;
 
 namespace App.Utils
 {
-    class Record : Binder
+    class Record<A> : Binder
     {
+        public interface Callback
+        {
+            void Run(A activity);
+        }
+
         private static readonly Handler uiHandler = new Handler(Looper.MainLooper);
 
-        private Activity visibleActivity;
+        private A visibleActivity;
 
-        private readonly List<Action> pendingCallbacks = new List<Action>();
+        private readonly List<Callback> pendingCallbacks = new List<Callback>();
 
-        public void ExecuteOnVisible(Action callback)
+        public void ExecuteOnVisible(Callback callback)
         {
             //uiHandler.Post(delegate
             //{
@@ -26,30 +31,30 @@ namespace App.Utils
                 else
                 {
                     // Simple call
-                    callback();
+                    callback.Run(visibleActivity);
                 }
             //});
         }
 
-        public Activity VisibleActivity
+        public A VisibleActivity
         {
             get => visibleActivity;
             set
             {
                 this.visibleActivity = value;
 
-                if (this.visibleActivity != null)
+                if (this.visibleActivity != null && pendingCallbacks.Count != 0)
                 {
-                    foreach (Action callback in pendingCallbacks)
+                    foreach (Callback callback in pendingCallbacks)
                     {
-                        callback();
+                        callback.Run(visibleActivity);
                     }
                     pendingCallbacks.Clear();
                 }
             }
         }
 
-        public static Rec ReadBundle<Rec>(Bundle bundle, string key) where Rec : Record
+        public static Rec ReadBundle<Rec>(Bundle bundle, string key) where Rec : Record<A>
         {
             if (bundle == null || string.IsNullOrEmpty(key))
             {
