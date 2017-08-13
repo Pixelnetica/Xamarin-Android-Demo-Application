@@ -101,8 +101,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutDialogFragment.cs" />
     <Compile Include="Main\AppLog.cs" />
     <Compile Include="Main\Processing.cs" />
+    <Compile Include="Main\SaveImageTask.cs" />
     <Compile Include="Utils\Message.cs" />
     <Compile Include="Utils\Profiler.cs" />
     <Compile Include="Main\SaveDialogFragment.cs" />

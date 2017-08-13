@@ -3200,14 +3200,14 @@ namespace App
 			// aapt resource value: 0x7f080012
 			public const int abc_toolbar_collapse_description = 2131230738;
 			
-			// aapt resource value: 0x7f080044
-			public const int about_message = 2131230788;
-			
-			// aapt resource value: 0x7f080045
-			public const int about_ok = 2131230789;
+			// aapt resource value: 0x7f080055
+			public const int about_message = 2131230805;
 			
 			// aapt resource value: 0x7f080043
-			public const int about_title = 2131230787;
+			public const int about_ok = 2131230787;
+			
+			// aapt resource value: 0x7f080054
+			public const int about_title = 2131230804;
 			
 			// aapt resource value: 0x7f080042
 			public const int action_about = 2131230786;
@@ -3296,50 +3296,53 @@ namespace App
 			// aapt resource value: 0x7f08002f
 			public const int permission_query_write_storage = 2131230767;
 			
+			// aapt resource value: 0x7f080046
+			public const int processing_bw = 2131230790;
+			
 			// aapt resource value: 0x7f080048
-			public const int processing_bw = 2131230792;
-			
-			// aapt resource value: 0x7f08004a
-			public const int processing_color = 2131230794;
-			
-			// aapt resource value: 0x7f080049
-			public const int processing_gray = 2131230793;
+			public const int processing_color = 2131230792;
 			
 			// aapt resource value: 0x7f080047
-			public const int processing_origin = 2131230791;
+			public const int processing_gray = 2131230791;
 			
-			// aapt resource value: 0x7f080046
-			public const int processing_source = 2131230790;
+			// aapt resource value: 0x7f080045
+			public const int processing_origin = 2131230789;
 			
-			// aapt resource value: 0x7f080054
-			public const int profile_binarization = 2131230804;
-			
-			// aapt resource value: 0x7f080053
-			public const int profile_correct_document = 2131230803;
+			// aapt resource value: 0x7f080044
+			public const int processing_source = 2131230788;
 			
 			// aapt resource value: 0x7f080052
-			public const int profile_detect_corners = 2131230802;
-			
-			// aapt resource value: 0x7f08004f
-			public const int save_imagesdk_pdf = 2131230799;
-			
-			// aapt resource value: 0x7f08004e
-			public const int save_imagesdk_png = 2131230798;
-			
-			// aapt resource value: 0x7f080050
-			public const int save_imagesdk_tiff = 2131230800;
+			public const int profile_binarization = 2131230802;
 			
 			// aapt resource value: 0x7f080051
-			public const int save_multi_pages = 2131230801;
+			public const int profile_correct_document = 2131230801;
 			
-			// aapt resource value: 0x7f08004c
-			public const int save_system_jpeg = 2131230796;
+			// aapt resource value: 0x7f080050
+			public const int profile_detect_corners = 2131230800;
+			
+			// aapt resource value: 0x7f080053
+			public const int profile_write_file = 2131230803;
 			
 			// aapt resource value: 0x7f08004d
-			public const int save_system_png = 2131230797;
+			public const int save_imagesdk_pdf = 2131230797;
+			
+			// aapt resource value: 0x7f08004c
+			public const int save_imagesdk_png = 2131230796;
+			
+			// aapt resource value: 0x7f08004e
+			public const int save_imagesdk_tiff = 2131230798;
+			
+			// aapt resource value: 0x7f08004f
+			public const int save_multi_pages = 2131230799;
+			
+			// aapt resource value: 0x7f08004a
+			public const int save_system_jpeg = 2131230794;
 			
 			// aapt resource value: 0x7f08004b
-			public const int save_title = 2131230795;
+			public const int save_system_png = 2131230795;
+			
+			// aapt resource value: 0x7f080049
+			public const int save_title = 2131230793;
 			
 			// aapt resource value: 0x7f080013
 			public const int search_menu_title = 2131230739;

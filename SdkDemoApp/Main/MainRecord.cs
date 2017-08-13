@@ -40,6 +40,15 @@ namespace App.Main
         MetaImage targetImage;
         bool inCropTask;
 
+        // Data
+        const string PREFS_STRONG_SHADOWS = "STRONG_SHADOWS";
+        const string PREFS_WRITER_TYPE = "WRITER_TYPE";
+        const string PREFS_MULTI_PAGES = "MULTI_PAGES";
+
+        bool strongShadows;
+        int writerType;
+        bool multiPages;
+
         public MainRecord(Activity activity)
         {
             context = activity.ApplicationContext;
@@ -181,7 +190,6 @@ namespace App.Main
             CropImageTask task = new CropImageTask((CropImageTask.Job result) =>
             {
                 waitMode = false;
-                if (result.HasError)
                 inCropTask = false;
 
                 if (result.HasError)
@@ -202,7 +210,62 @@ namespace App.Main
 
                 ExecuteOnVisible(callback);                
             });
-            task.Execute(new CropImageTask.Job(sourceImage, false, userCorners, request));
+            task.Execute(new CropImageTask.Job(sourceImage, strongShadows, userCorners, request));
+        }
+
+        private bool IsExternalStorageWritable()
+        {
+            string state = Android.OS.Environment.ExternalStorageState;
+            return Android.OS.Environment.MediaMounted.Equals(state);
+        }
+
+        public void OnSaveImage(string fileName, Callback callback)
+        {
+            // Define image
+            MetaImage image;
+            switch (imageMode)
+            {
+                case ImageState.Source:
+                    image = sourceImage;
+                    break;
+
+                case ImageState.Target:
+                    image = targetImage;
+                    break;
+
+                default:
+                    image = null;
+                    break;
+            }
+            if (image == null)
+            {
+                return;
+            }
+
+            messages.Clear();
+            waitMode = true;
+
+            new SaveImageTask((SaveImageTask.Result result) =>
+            {
+                waitMode = false;
+
+                if (result.HsError)
+                {
+                    messages.Add(new Message(Message.TypeError, result.errorMessage));
+                }
+                else
+                {
+                    messages.Add(new Message(result.writeProfiler.Id,
+                        new object[] {
+                            result.writeProfiler.Total,
+                            System.IO.Path.GetFileName(result.outputFilePath),  // display only file name
+                            (result.outputFileSize+512)/1024    // KB
+                        }));
+                }
+
+                ExecuteOnVisible(callback);
+            }).Execute(new SaveImageTask.Params(image, fileName, writerType, multiPages));
+
         }
 
         public void OnShowSource(Callback callback)
@@ -216,6 +279,91 @@ namespace App.Main
             messages.Clear();
 
             ExecuteOnVisible(callback);
+        }
+
+        public void LoadPreferencies(MainActivity activity)
+        {
+            ISharedPreferences prefs = activity.Preferences;
+            strongShadows = prefs.GetBoolean(PREFS_STRONG_SHADOWS, strongShadows);
+            writerType = prefs.GetInt(PREFS_WRITER_TYPE, writerType);
+            multiPages = prefs.GetBoolean(PREFS_MULTI_PAGES, multiPages);
+        }
+
+        class PreferenceWriter<T> : Callback
+        {
+            string name;
+            T value;
+            string method;
+
+            delegate ISharedPreferencesEditor Method(string name, T value);
+
+            public PreferenceWriter(string name, T value, string method)
+            {
+                this.name = name;
+                this.value = value;
+                this.method = method;
+            }
+            public void Run(MainActivity activity)
+            {
+                ISharedPreferencesEditor editor = activity.Preferences.Edit();
+                Method caller = (Method)Delegate.CreateDelegate(typeof(Method), editor, method);
+                caller(name, value);
+                editor.Apply();
+            }
+        }
+
+        class BoolPreferenceWriter : PreferenceWriter<bool>
+        {
+            public BoolPreferenceWriter(string name, bool value) : base(name, value, "PutBoolean")
+            {
+
+            }
+        }
+
+        class IntPreferenceWriter : PreferenceWriter<int>
+        {
+            public IntPreferenceWriter(string name, int value) : base(name, value, "PutInt")
+            {
+
+            }
+        }
+
+        public bool StrongShadow
+        {
+            get => strongShadows;
+            set
+            {
+                if (value != strongShadows)
+                {
+                    strongShadows = value;
+                    ExecuteOnVisible(new BoolPreferenceWriter(PREFS_STRONG_SHADOWS, strongShadows));
+                }
+            }
+        }
+
+        public int WriterType {
+            get => writerType;
+            set
+            {
+                if (value != writerType)
+                {
+                    writerType = value;
+                    ExecuteOnVisible(new IntPreferenceWriter(PREFS_WRITER_TYPE, writerType));
+                }
+            }
+        }
+
+        public bool MultiPages
+        {
+            get => multiPages;
+            set
+            {
+                if (value != multiPages)
+                {
+                    multiPages = value;
+                    ExecuteOnVisible(new BoolPreferenceWriter(PREFS_MULTI_PAGES, multiPages));
+                }
+            }
         }
     }
 }

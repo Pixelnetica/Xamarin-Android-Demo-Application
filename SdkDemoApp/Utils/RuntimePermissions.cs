@@ -11,11 +11,16 @@ namespace App.Utils
 {
     public class RuntimePermissions
     {
+        public interface Callback
+        {
+            void OnRuntimePermission(Activity activity, string permission, bool granted);
+        }
+
         class Task
         {
             public readonly string permission;
-            public readonly Action<string, bool> callback;
-            public Task(string permission, Action<string, bool> callback)
+            public readonly Callback callback;
+            public Task(string permission, Callback callback)
             {
                 this.permission = permission;
                 this.callback = callback;
@@ -27,7 +32,7 @@ namespace App.Utils
         private int requestCounter = initialRequstValue;
         private Dictionary<int, Task> requestList = new Dictionary<int, Task>();
 
-        public int RunWithPermission(Activity activity, string permission, string message, Action<string, bool> callback)
+        public int RunWithPermission(Activity activity, string permission, string message, Callback callback)
         {
             if (ContextCompat.CheckSelfPermission(activity, permission) != (int)Permission.Granted)
             {
@@ -76,18 +81,18 @@ namespace App.Utils
             else
             {
                 // Already done
-                callback(permission, true);
+                callback.OnRuntimePermission(activity, permission, true);
                 return -1;
             }
         }
 
-        public int RunWithPermission(Activity activity, string permission, int messageId, Action<string, bool> callback)
+        public int RunWithPermission(Activity activity, string permission, int messageId, Callback callback)
         {
             string message = activity.GetString(messageId);
             return RunWithPermission(activity, permission, message, callback);
         }
 
-        public bool HandleRequestPermissionsResult(int requestCode, string [] permissions, Permission[] grantResult)
+        public bool HandleRequestPermissionsResult(Activity activity, int requestCode, string [] permissions, Permission[] grantResult)
         {
             // Get task for required request
             if (!requestList.ContainsKey(requestCode))
@@ -111,7 +116,7 @@ namespace App.Utils
                 return false;
             }
 
-            task.callback(task.permission, result == Permission.Granted);
+            task.callback.OnRuntimePermission(activity, task.permission, result == Permission.Granted);
             return true;
         }
 
@@ -123,7 +128,7 @@ namespace App.Utils
                 throw new InvalidOperationException("Permissions and results have different length");
             }
 
-            int index = Arrays.AsList(request).IndexOf(permission);
+            int index = Array.FindIndex(request, s => object.Equals(s, permission));
             if (index != -1)
             {
                 return grantResult[index];

@@ -8,12 +8,15 @@
         android:id="@+id/image1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:layout_gravity="center_vertical"
         android:scaleType="fitCenter" />
-  <FrameLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical">
-    <include
-        layout="@layout/support_simple_spinner_dropdown_item" />
-  </FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical">
+        <include
+            layout="@layout/support_simple_spinner_dropdown_item" />
+    </FrameLayout>
 </LinearLayout>

@@ -15,6 +15,7 @@ using Android.Graphics;
 using static Android.Widget.AdapterView;
 using System;
 using System.Linq;
+using Android.Preferences;
 
 namespace App.Main
 {
@@ -22,7 +23,7 @@ namespace App.Main
     using Message = App.Utils.Message;
 
     [Activity(Label = "@string/MainActivityTitle", MainLauncher = true, Icon = "@drawable/icon", Theme = "@style/AppTheme")]
-    public class MainActivity : BaseActivity  
+    public class MainActivity : BaseActivity, SaveDialogFragment.Callback  
     {
         MainRecord record;
         const string BUNDLE_MAIN_RECORD = "MAIN_RECORD";
@@ -58,6 +59,7 @@ namespace App.Main
             if (bundle == null)
             {
                 record = new MainRecord(this);
+                record.LoadPreferencies(this);
             }
             else
             {
@@ -105,6 +107,8 @@ namespace App.Main
             GlobalLayutListener.Install(imageView, true, () => { UpdateView(); });
         }
 
+        public ISharedPreferences Preferences { get => PreferenceManager.GetDefaultSharedPreferences(this); }
+
         static readonly Processing[] processingItems = new Processing[] { Processing.Original, Processing.BW, Processing.Gray, Processing.Color };
 
         private void OnColorItemSelected(Spinner spinner, int position, long id)
@@ -146,6 +150,27 @@ namespace App.Main
         {
             MenuInflater.Inflate(Resource.Menu.main, menu);
             return true;
+        }
+
+        public override bool OnPrepareOptionsMenu(IMenu menu)
+        {
+            var item = menu.FindItem(Resource.Id.action_strong_shadows);
+            item.SetChecked(record.StrongShadow);
+            return true;
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch(item.ItemId)
+            {
+                case Resource.Id.action_about:
+                    ShowAbout();
+                    return true;
+                case Resource.Id.action_strong_shadows:
+                    record.StrongShadow = !record.StrongShadow;
+                    return true;
+            }
+            return base.OnOptionsItemSelected(item);
         }
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
@@ -199,25 +224,49 @@ namespace App.Main
 
         private void SaveImage()
         {
-            SaveDialogFragment dialog = new SaveDialogFragment();
-            dialog.Show(SupportFragmentManager, "Save");
-            /*
-            var builder = new AlertDialog.Builder(this, Resource.Style.Theme_AppCompat_Dialog_Alert);
-            builder.SetTitle(Resource.String.save_title);
-            builder.SetIcon(Resource.Drawable.ic_save_white_24dp);
+            SaveDialogFragment.Show(SupportFragmentManager, record.WriterType, record.MultiPages);
+        }
 
-            //var builderContext = builder.Context;
-            var inflater = LayoutInflater.From(builder.Context);
-            View view = inflater.Inflate(Resource.Layout.Save, null);
-            builder.SetView(view);
-
-            builder.SetPositiveButton(Android.Resource.String.Ok, (object sender, DialogClickEventArgs e) =>
+        class SaveImageCallback : RuntimePermissions.Callback
+        {
+            public void OnRuntimePermission(Activity activity, string permission, bool granted)
             {
+                ((MainActivity)activity).SaveImageGranted();
+            }
+        }
 
-            });
+        public void OnSaveDialogOk(int writerType, bool multiPages)
+        {
+            record.WriterType = writerType;
+            record.MultiPages = multiPages;
 
-            builder.Show();
-            */
+            // Request write permissions
+            RuntimePermissions.RunWithPermission(this, Manifest.Permission.ReadExternalStorage, Resource.String.permission_query_write_storage,
+                new SaveImageCallback());
+        }
+
+        public long UnixTimeNow()
+        {
+            var epochTicks = new DateTime(1970, 1, 1).Ticks;
+            return ((DateTime.UtcNow.Ticks - epochTicks) / TimeSpan.TicksPerSecond);
+        }
+
+        private void SaveImageGranted()
+        {
+            // Build file name
+            var folder = new Java.IO.File(Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures), "Pixelnetica");
+            folder.Mkdirs();
+
+            string fileName = string.Format("SdkDemo-{0:X08}.jpg", UnixTimeNow());
+            var filePath = new Java.IO.File(folder, fileName);
+
+            record.OnSaveImage(filePath.AbsolutePath, new UpdateCallback());
+            UpdateView();
+        }
+
+        private void ShowAbout()
+        {
+            new AboutDialogFragment().Show(SupportFragmentManager, "About");
         }
 
         private void UpdateView()
@@ -246,7 +295,7 @@ namespace App.Main
             // Setup buttons
             //btnEdit.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
             spnColor.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
-            //btnSave.Visibility = (record.ImageMode == MainRecord.ImageState.Target) ? ViewStates.Visible : ViewStates.Gone;
+            btnSave.Visibility = (record.ImageMode != MainRecord.ImageState.InitNothing) ? ViewStates.Visible : ViewStates.Gone;
 
             ShowMessages();
         }

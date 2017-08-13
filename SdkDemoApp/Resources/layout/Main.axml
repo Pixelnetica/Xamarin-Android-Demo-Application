@@ -27,10 +27,11 @@
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0"
                     android:text="@string/btn_open_image"
                     android:id="@+id/btn_open_image"
                     android:drawableLeft="@drawable/ic_description_white_24dp" />
-              <!--
+            <!--
                 <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
@@ -50,12 +51,14 @@
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:id="@+id/spn_color_mode"
                     app:popupTheme="@style/AppTheme.AppBarSpinnerPopup" />
                 <Button
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="0"
                     android:text="@string/btn_save_image"
                     android:id="@+id/btn_save_image"
                     android:drawableLeft="@drawable/ic_save_white_24dp" />
