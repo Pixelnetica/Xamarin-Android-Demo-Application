@@ -81,7 +81,7 @@ namespace App.Main
                 {
                     case ImageSdkLibrary.ImageWriterJpeg:
                         extensions = ".jpg";
-                        bundle.PutInt(ImageWriter.ImageWriterConfigCompression, 80);
+                        bundle.PutInt(ImageWriter.ConfigCompression, 80);
                         break;
 
                     case ImageSdkLibrary.ImageWriterPng:
@@ -96,7 +96,7 @@ namespace App.Main
                     case ImageSdkLibrary.ImageWriterPdf:
                         extensions = ".pdf";
                         maxPages = 3;
-                        bundle.PutInt(ImageWriter.ImageWriterConfigPaper, ImageWriter.PaperA4);
+                        bundle.PutInt(ImageWriter.ConfigPaper, ImageWriter.PaperA4);
                         break;
 
                     case ImageSdkLibrary.ImageWriterTiff:

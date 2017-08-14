@@ -12,8 +12,6 @@ namespace App.Main
 {
     class MainRecord : Record<MainActivity>
     {
-        Context context;
-
         // Perform long task
         bool waitMode;
 
@@ -49,10 +47,9 @@ namespace App.Main
         int writerType;
         bool multiPages;
 
-        public MainRecord(Activity activity)
+        public MainRecord(Application app)
         {
-            context = activity.ApplicationContext;
-            ImageSdkLibrary.Load((Application)context, null, 0);
+            ImageSdkLibrary.Load(app, "E343-49A0-T4D2-CTD5-4JF-7I9J-3T7M-OIDOE", 1);
         }
 
         public Bitmap DisplayBitmap
@@ -117,7 +114,7 @@ namespace App.Main
             return output;
         }
 
-        public void OpenSourceImage(Android.Net.Uri uri, Callback callback)
+        public void OpenSourceImage(ContentResolver cr, Android.Net.Uri uri, Callback callback)
         {
             // Reset Source
             imageMode = ImageState.InitNothing;
@@ -140,7 +137,7 @@ namespace App.Main
             GC.Collect();
 
             // Load in the thread
-            LoadImageTask task = new LoadImageTask(context.ContentResolver, (LoadImageTask.Result result) =>
+            LoadImageTask task = new LoadImageTask(cr, (LoadImageTask.Result result) =>
             {
                 // Store source
                 sourceImageUri = uri;

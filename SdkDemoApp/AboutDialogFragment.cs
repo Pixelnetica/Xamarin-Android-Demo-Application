@@ -21,6 +21,15 @@ namespace App
 {
     class AboutDialogFragment : AlertDialogFragment
     {
+
+        class SimpleDialogInterfaceOnClickListener : Java.Lang.Object, IDialogInterfaceOnClickListener
+        {
+            public void OnClick(IDialogInterface dialog, int which)
+            {
+                dialog.Dismiss();
+            }
+        }
+
         protected override View OnCreateCustomView(Context context, Android.Support.V7.App.AlertDialog.Builder builder, Bundle savedInstanceState)
         {
             string versionName;
@@ -41,52 +50,19 @@ namespace App
             builder.SetIcon(appInfo.Icon);
             builder.SetMessage(msg);
             builder.SetCancelable(true);
-            builder.SetPositiveButton(Android.Resource.String.Ok, (object sender, DialogClickEventArgs e) => { });
+            builder.SetPositiveButton(Android.Resource.String.Ok, new SimpleDialogInterfaceOnClickListener());
 
             return null;       
         }
 
-        private bool linksInstalled;
-        public override void OnStart()
+        protected override void OnInitDialog()
         {
-            base.OnStart();
             // Show links
             var textView = Dialog.FindViewById<TextView>(Android.Resource.Id.Message);
-            if (textView != null && !linksInstalled)
+            if (textView != null)
             {
                 textView.MovementMethod = LinkMovementMethod.Instance;
-                linksInstalled = true;
-            }
-
-        }
-
-        public static ICharSequence GetFormattedHtml(Context context, int id, params object[] args)
-        {      
-            for (int i = 0; i < args.Length; ++i)
-            {
-                args[i] = (args[i] is string) ? TextUtils.HtmlEncode((string)args[i]) : args[i];
-            }
-
-            if (Build.VERSION.SdkInt >= Build.VERSION_CODES.N)
-            {
-                return Html.FromHtml(
-                    string.Format(
-                        Html.ToHtml(
-                            new SpannableString(
-                                Html.FromHtml(
-                                    context.GetTextFormatted(id).ToString(), 0)), 0)), 0);
-            }
-            else
-            {
-                return Html.FromHtml(
-                    string.Format(
-                        Html.ToHtml(
-                            new SpannableString(
-                                Html.FromHtml(
-                                    context.GetTextFormatted(id).ToString()))
-                                   ), args));
             }
         }
-
     }
 }

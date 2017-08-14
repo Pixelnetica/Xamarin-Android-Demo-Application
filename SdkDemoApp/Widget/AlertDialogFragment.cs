@@ -12,6 +12,8 @@ using Android.Widget;
 using Android.Support.V4.App;
 using Android.Support.V7.App;
 using Android.App;
+using Java.Lang;
+using Android.Text;
 
 namespace App.Widget
 {
@@ -24,10 +26,7 @@ namespace App.Widget
         private string dialogTitle;
         private Context dialogContext;
         private View customView;
-        public AlertDialogFragment()
-        {
-            //SetStyle(StyleNormal, dialogTheme);
-        }
+        private bool initializeDialog;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -92,7 +91,25 @@ namespace App.Widget
         {
             // Update dialog title
             UpdateTitle();
+            initializeDialog = true;
             return null;
+        }
+
+        public override void OnStart()
+        {
+            base.OnStart();
+
+            if (initializeDialog)
+            {
+                OnInitDialog();
+                initializeDialog = false;
+            }
+        }
+
+        // Setup AlertDialog after creation
+        protected virtual void OnInitDialog()
+        {
+
         }
 
         protected void UpdateTitle()
@@ -125,5 +142,36 @@ namespace App.Widget
                 }
             }
         }
+
+        // Helper
+        public static ICharSequence GetFormattedHtml(Context context, int id, params object[] args)
+        {
+            for (int i = 0; i < args.Length; ++i)
+            {
+                args[i] = (args[i] is string) ? TextUtils.HtmlEncode((string)args[i]) : args[i];
+            }
+
+            if (Build.VERSION.SdkInt >= (BuildVersionCodes) 24)
+            {
+                return Html.FromHtml(
+                    string.Format(
+                        Html.ToHtml(
+                            new SpannableString(
+                                Html.FromHtml(
+                                    context.GetTextFormatted(id).ToString(), FromHtmlOptions.ModeLegacy)), ToHtmlOptions.ParagraphLinesConsecutive)), FromHtmlOptions.ModeLegacy);
+            }
+            else
+            {
+                return Html.FromHtml(
+                    string.Format(
+                        Html.ToHtml(
+                            new SpannableString(
+                                Html.FromHtml(
+                                    context.GetTextFormatted(id).ToString()))
+                                   ), args));
+            }
+        }
+
+
     }
 }

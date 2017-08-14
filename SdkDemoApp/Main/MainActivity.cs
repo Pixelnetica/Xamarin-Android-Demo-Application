@@ -58,7 +58,7 @@ namespace App.Main
 
             if (bundle == null)
             {
-                record = new MainRecord(this);
+                record = new MainRecord(Application);
                 record.LoadPreferencies(this);
             }
             else
@@ -190,9 +190,8 @@ namespace App.Main
         
         private void OnOpenImage(Android.Net.Uri imageUri)
         {
-            record.OpenSourceImage(imageUri, new UpdateCallback());
+            record.OpenSourceImage(ContentResolver, imageUri, new UpdateCallback());
             UpdateView();
-
         }
 
         private void OpenImage()
