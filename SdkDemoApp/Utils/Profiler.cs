@@ -10,6 +10,11 @@ namespace App.Utils
         private int start;
         private int last;
 
+        public Profiler() : this(null, 0, true)
+        {
+
+        }
+
         public Profiler(int id) : this(null, id, true)
         {
 
@@ -46,6 +51,7 @@ namespace App.Utils
 
         public string Name { get => name; }
         public int Id { get => id; }
+        public bool HasId { get => id != 0; }
         public int Total { get => total; }
         public int Last { get => last; }
 

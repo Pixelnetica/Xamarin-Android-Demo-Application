@@ -84,7 +84,7 @@ namespace App.Main
                     // Try to detect document corners
                     Bundle args = new Bundle();
                     int start = System.Environment.TickCount;
-                    var profiler = new Profiler(Resource.String.profile_detect_corners);
+                    var profiler = new Profiler(/*Resource.String.profile_detect_corners*/);
                     Corners corners = sdk.DetectDocumentCorners(originImage, args);
                     profiler.Finish();
                     if (!args.GetBoolean(ImageSdkLibrary.SdkIsSmartCrop))

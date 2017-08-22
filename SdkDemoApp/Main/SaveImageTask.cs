@@ -56,7 +56,7 @@ namespace App.Main
                 this.errorMessage = errorMessage;
             }
 
-            public bool HsError { get => !string.IsNullOrEmpty(errorMessage); }
+            public bool HasError { get => !string.IsNullOrEmpty(errorMessage); }
         }
 
         Action<Result> callback;

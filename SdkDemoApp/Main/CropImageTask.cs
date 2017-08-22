@@ -58,7 +58,7 @@ namespace App.Main
                 {
                     // Crop image
                     inputJob.image.StrongShadows = inputJob.strongShadows;
-                    var profilerCrop = new Profiler(Resource.String.profile_correct_document);
+                    var profilerCrop = new Profiler(/*Resource.String.profile_correct_document*/);
                     MetaImage croppedImage = sdk.CorrectDocument(inputJob.image, inputJob.corners);
                     profilerCrop.Finish();
                     if (croppedImage == null)
@@ -69,7 +69,7 @@ namespace App.Main
 
                     // Process
                     MetaImage targetImage = null;
-                    var profilerProcessing = new Profiler(Resource.String.profile_binarization);
+                    var profilerProcessing = new Profiler(/*Resource.String.profile_binarization*/);
                     switch (inputJob.processing)
                     {
                         case Processing.Original:

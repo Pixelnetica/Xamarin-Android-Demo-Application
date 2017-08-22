@@ -3200,14 +3200,14 @@ namespace App
 			// aapt resource value: 0x7f080012
 			public const int abc_toolbar_collapse_description = 2131230738;
 			
-			// aapt resource value: 0x7f080055
-			public const int about_message = 2131230805;
+			// aapt resource value: 0x7f080052
+			public const int about_message = 2131230802;
 			
 			// aapt resource value: 0x7f080043
 			public const int about_ok = 2131230787;
 			
-			// aapt resource value: 0x7f080054
-			public const int about_title = 2131230804;
+			// aapt resource value: 0x7f080051
+			public const int about_title = 2131230801;
 			
 			// aapt resource value: 0x7f080042
 			public const int action_about = 2131230786;
@@ -3311,17 +3311,8 @@ namespace App
 			// aapt resource value: 0x7f080044
 			public const int processing_source = 2131230788;
 			
-			// aapt resource value: 0x7f080052
-			public const int profile_binarization = 2131230802;
-			
-			// aapt resource value: 0x7f080051
-			public const int profile_correct_document = 2131230801;
-			
 			// aapt resource value: 0x7f080050
-			public const int profile_detect_corners = 2131230800;
-			
-			// aapt resource value: 0x7f080053
-			public const int profile_write_file = 2131230803;
+			public const int profile_write_file = 2131230800;
 			
 			// aapt resource value: 0x7f08004d
 			public const int save_imagesdk_pdf = 2131230797;

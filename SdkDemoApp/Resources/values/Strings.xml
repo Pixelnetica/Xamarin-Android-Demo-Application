@@ -40,10 +40,12 @@
   <string name="save_imagesdk_tiff">Image SDK TIFF-G4</string>
   <string name="save_multi_pages">Simulate multi-pages</string>
   <!-- NOTE: .Net format notice -->
+  <!--
   <string name="profile_detect_corners">Corners was detected in {0:D} ms</string>
   <string name="profile_correct_document">Document was cropped in {0:D} ms</string>
   <string name="profile_binarization">Document was processed in {0:D} ms</string>
-  <string name="profile_write_file">Writen {2:D} KiB image file {1:S} in {0:D} ms</string>
+  -->
+  <string name="profile_write_file">Writen {2:D} KiB image file {1:S}</string>
   <string name="about_title">Abount Sdk Demo</string>
   <string name="about_message">Version {0:S}&lt;br&gt;See more on &lt;a href=&quot;http://www.pixelnetica.com&quot;&gt;Pixelnetica website&lt;/a&gt;</string>
 </resources>

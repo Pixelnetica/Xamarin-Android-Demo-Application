@@ -154,7 +154,7 @@ namespace App.Main
                 {
                     messages.Add(new Message(Message.TypeError, result.Error));
                 }
-                else
+                else if (result.Profiler.HasId)
                 {
                     // Add profilers
                     messages.Add(new Message(result.Profiler.Id, new object[] { result.Profiler.Total }));
@@ -201,7 +201,10 @@ namespace App.Main
                     processing = result.processing;
                     foreach (Profiler p in result.profilers)
                     {
-                        messages.Add(new Message(p.Id, new object[] { p.Total }));
+                        if (p.HasId)
+                        {
+                            messages.Add(new Message(p.Id, new object[] { p.Total }));
+                        }
                     }
                 }
 
@@ -246,7 +249,7 @@ namespace App.Main
             {
                 waitMode = false;
 
-                if (result.HsError)
+                if (result.HasError)
                 {
                     messages.Add(new Message(Message.TypeError, result.errorMessage));
                 }
@@ -256,7 +259,7 @@ namespace App.Main
                         new object[] {
                             result.writeProfiler.Total,
                             System.IO.Path.GetFileName(result.outputFilePath),  // display only file name
-                            (result.outputFileSize+512)/1024    // KB
+                            (result.outputFileSize+512)/1024    // KiB
                         }));
                 }
 
