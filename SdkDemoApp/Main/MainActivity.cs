@@ -22,7 +22,7 @@ namespace App.Main
     using AlertDialog = Android.Support.V7.App.AlertDialog;
     using Message = App.Utils.Message;
 
-    [Activity(Label = "@string/MainActivityTitle", MainLauncher = true, Icon = "@drawable/icon", Theme = "@style/AppTheme")]
+    [Activity(Label = "@string/MainActivityTitle", MainLauncher = true, Icon = "@mipmap/ic_launcher", Theme = "@style/AppTheme")]
     public class MainActivity : BaseActivity, SaveDialogFragment.Callback  
     {
         MainRecord record;
