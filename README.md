@@ -15,7 +15,7 @@ For more information about DSSDK main Features and Benefits please visit [Pixeln
 ## Documentation
 The documentation for DSSDK Xamarin Android can be found by the link below:
 
-* [Pixelnetica Document Scanning SDK for Xamarin-Android documentation](# "DSSDKD for Xamarin-Android Documentation")
+* [Pixelnetica Document Scanning SDK for Xamarin-Android documentation](https://pixelnetica.github.io/Document-Scanning-SDK-Documentation/Xamarin-Android/ "DSSDKD for Xamarin-Android Documentation")
 
 ## License
 
