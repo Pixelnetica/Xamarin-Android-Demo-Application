@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-  
+
   <!-- Basic application theme -->
   <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     <item name="colorPrimary">@color/primary</item>
@@ -25,15 +25,43 @@
   </style>
 
 
-  <!-- Common Toolbar theme -->
-  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
-  <!-- Common Toolbar popup theme -->
-  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
-
-  <style name="AppActionBar" parent="AppTheme.AppBarOverlay">
-    <item name="android:displayOptions"></item>
+  <!-- Common Toolbar/AppBar theme -->
+  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <item name="buttonBarStyle">@style/ToolbarButtonBarStyle</item>
+    <item name="buttonBarButtonStyle">?attr/borderlessButtonStyle</item>
   </style>
 
+  <!-- Toolbar popup theme -->
+  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+    <!--
+    <item name="colorPrimary">@color/primary_light</item>
+    <item name="android:popupBackground">?attr/colorPrimary</item>
+    <item name="android:colorBackground">?attr/colorPrimary</item>
+    -->
+  </style>
+
+  <!-- Toolbar spinner popup theme -->
+  <style name="AppTheme.AppBarSpinnerPopup" parent="AppTheme.AppBarOverlay">
+    <item name="android:popupBackground">?attr/colorPrimary</item>
+    <item name="android:colorBackground">?attr/colorPrimary</item>
+  </style>
+
+  <style name="AppActionBar" parent="AppTheme.AppBarOverlay">
+    <!-- Try to hide application title -->
+    <item name="android:displayOptions"/>
+  </style>
+
+  <style name="ToolbarButtonBarStyle" parent="android:Widget.Button">
+    <item name="android:background">@null</item>
+  </style>
+
+  <style name="AppTheme.Dialog" parent="Theme.AppCompat.Dialog.Alert">
+    <item name="colorAccent">@color/accent</item>
+  </style>
+
+  <style name="AppTheme.Dialog.Alert" parent="AppTheme.Dialog">
+    <item name="android:windowNoTitle">true</item>
+  </style>
+  
 
 </resources>
