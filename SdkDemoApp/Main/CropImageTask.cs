@@ -59,7 +59,17 @@ namespace App.Main
                     // Crop image
                     inputJob.image.StrongShadows = inputJob.strongShadows;
                     var profilerCrop = new Profiler(/*Resource.String.profile_correct_document*/);
-                    MetaImage croppedImage = sdk.CorrectDocument(inputJob.image, inputJob.corners);
+                    Log.Debug("ImageSDK", "Test LOG");
+                    MetaImage croppedImage;
+                    if (inputJob.corners != null)
+                    {
+                        croppedImage = sdk.CorrectDocument(inputJob.image, inputJob.corners);
+                    }
+                    else
+                    {
+                        // Corners wasn't defined
+                        croppedImage = inputJob.image;
+                    }
                     profilerCrop.Finish();
                     if (croppedImage == null)
                     {
