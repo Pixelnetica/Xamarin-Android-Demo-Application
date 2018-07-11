@@ -49,7 +49,7 @@ namespace App.Main
 
         public MainRecord(Application app)
         {
-            ImageSdkLibrary.Load(app);
+            ImageSdkLibrary.Load(app, "E343-49A0-T4D2-CTD5-4JF-7I9J-3T7M-OIDOE", 1);
         }
 
         public Bitmap DisplayBitmap

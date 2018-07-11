@@ -57,10 +57,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ImageSdkBinding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageSDK.Pixelnetica.2.3.0\lib\MonoAndroid10\ImageSdkBinding.dll</HintPath>
+      <HintPath>..\packages\ImageSDK.Pixelnetica.1.0.5\lib\MonoAndroid10\ImageSdkBinding.dll</HintPath>
     </Reference>
     <Reference Include="ImageSdkWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ImageSDK.Pixelnetica.2.3.0\lib\MonoAndroid10\ImageSdkWrapper.dll</HintPath>
+      <HintPath>..\packages\ImageSDK.Pixelnetica.1.0.5\lib\MonoAndroid10\ImageSdkWrapper.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Android" />
