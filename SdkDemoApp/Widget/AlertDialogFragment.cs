@@ -158,7 +158,7 @@ namespace App.Widget
                         Html.ToHtml(
                             new SpannableString(
                                 Html.FromHtml(
-                                    context.GetTextFormatted(id).ToString(), FromHtmlOptions.ModeLegacy)), ToHtmlOptions.ParagraphLinesConsecutive)), FromHtmlOptions.ModeLegacy);
+                                    context.GetTextFormatted(id).ToString(), FromHtmlOptions.ModeLegacy)), ToHtmlOptions.ParagraphLinesConsecutive), args), FromHtmlOptions.ModeLegacy);
             }
             else
             {
