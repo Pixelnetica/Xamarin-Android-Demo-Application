@@ -61,21 +61,11 @@ namespace App.Main
                 using (ImageProcessing sdk = new ImageSdkLibrary().NewProcessingInstance())
                 {
                     Point sourceSize = new Point(sourceBitmap.Width, sourceBitmap.Height);
-                    Point supportSize = sdk.SupportImageSize(sourceSize);
-
-                    Bitmap scaledBitmap;
-                    if (sourceSize.Equals(supportSize))
-                    {
-                        // Do not scale
-                        scaledBitmap = sourceBitmap;
-                    }
-                    else
-                    {
-                        scaledBitmap = Bitmap.CreateScaledBitmap(sourceBitmap, supportSize.X, supportSize.Y, true);
-                    }
+                    //Point supportSize = sdk.SupportImageSize(sourceSize);
+                    var scaledBitmap = sourceBitmap;
 
                     // Rotate to origin
-                    MetaImage sourceImage = new MetaImage(scaledBitmap, cr, imageUri);
+                    MetaImage sourceImage = new MetaImage(scaledBitmap, imageUri.ToString());
                     MetaImage originImage = sdk.ImageWithoutRotation(sourceImage);
 
                     // Free source image
@@ -85,13 +75,11 @@ namespace App.Main
                     Bundle args = new Bundle();
                     int start = System.Environment.TickCount;
                     var profiler = new Profiler(/*Resource.String.profile_detect_corners*/);
-                    Corners corners = sdk.DetectDocumentCorners(originImage, args);
-                    profiler.Finish();
-                    if (!args.GetBoolean(ImageSdkLibrary.SdkIsSmartCrop))
-                    {
-                        corners = null;
-                    }
+                    bool bDocumentAreaChecked, bDocumentDistortionChecked;
+                    Corners corners = sdk.DetectDocumentCorners(originImage, false, out bDocumentAreaChecked, out bDocumentDistortionChecked);
 
+                    profiler.Finish();
+                    
                     // Free memory
                     GC.Collect();
 

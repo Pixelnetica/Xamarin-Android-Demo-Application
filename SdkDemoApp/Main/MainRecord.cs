@@ -49,7 +49,7 @@ namespace App.Main
 
         public MainRecord(Application app)
         {
-            ImageSdkLibrary.Load(app);
+            ImageSdkWrapper.Droid.Main.Init();
         }
 
         public Bitmap DisplayBitmap
@@ -62,10 +62,10 @@ namespace App.Main
                         return null;
 
                     case ImageState.Source:
-                        return MetaImage.SafeGetBitmap(sourceImage);
+                        return (Bitmap)MetaImage.SafeGetBitmap(sourceImage);
 
                     case ImageState.Target:
-                        return MetaImage.SafeGetBitmap(targetImage);
+                        return (Bitmap)MetaImage.SafeGetBitmap(targetImage);
 
                     default:
                         throw new InvalidOperationException(string.Format("Illegal image mode {0}", imageMode));
@@ -255,9 +255,9 @@ namespace App.Main
                 }
                 else
                 {
-                    messages.Add(new Message(result.writeProfiler.Id,
+                    messages.Add(new Message(0,
                         new object[] {
-                            result.writeProfiler.Total,
+                            "0",
                             System.IO.Path.GetFileName(result.outputFilePath),  // display only file name
                             (result.outputFileSize+512)/1024    // KiB
                         }));

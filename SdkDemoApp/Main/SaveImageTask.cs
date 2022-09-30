@@ -24,14 +24,14 @@ namespace App.Main
         {
             public readonly MetaImage image;
             public readonly string filePath;
-            public readonly int writerType;
+            public readonly ImageWriter.EImageFileType writerType;
             public readonly bool multiPages;
 
             public Params(MetaImage image, string filePath, int writerType, bool multiPages)
             {
                 this.image = image;
                 this.filePath = filePath;
-                this.writerType = writerType;
+                this.writerType = (ImageWriter.EImageFileType)writerType;
                 this.multiPages = multiPages;
             }
         }
@@ -41,14 +41,12 @@ namespace App.Main
         {
             public readonly string outputFilePath;
             public readonly long outputFileSize;
-            public readonly Profiler writeProfiler;
             public readonly string errorMessage;
 
             public Result(string outputFilePath, long outputFileSize, Profiler writeProfiler)
             {
                 this.outputFilePath = outputFilePath;
                 this.outputFileSize = outputFileSize;
-                this.writeProfiler = writeProfiler;
             }
 
             public Result(string errorMessage)
@@ -66,6 +64,21 @@ namespace App.Main
             this.callback = callback;
         }
 
+        static string GetExt(ImageWriter.EImageFileType type, string defFilePath)
+        {
+            switch (type)
+            {
+                case ImageWriter.EImageFileType.Jpeg: return ".jpg";
+                case ImageWriter.EImageFileType.Png:
+                case ImageWriter.EImageFileType.PngExt: return ".png";
+                case ImageWriter.EImageFileType.WebM: return ".webm";
+                case ImageWriter.EImageFileType.PdfPng:
+                case ImageWriter.EImageFileType.Pdf: return ".pdf";
+                case ImageWriter.EImageFileType.Tiff: return ".tif";
+                default:
+                    return Path.GetExtension(defFilePath);
+            }
+        }
 
         protected override Result RunInBackground(params Params[] @params)
         {
@@ -73,63 +86,75 @@ namespace App.Main
 
             try
             {
-                // Change input file extensions and setup simple config params
-                string extensions;
+                string extensions = GetExt(input.writerType, Path.GetExtension(input.filePath));
+
                 int maxPages = 1;
-                var bundle = new Bundle();
-                switch (input.writerType)
-                {
-                    case ImageSdkLibrary.ImageWriterJpeg:
-                        extensions = ".jpg";
-                        bundle.PutInt(ImageWriter.ConfigCompression, 80);
-                        break;
-
-                    case ImageSdkLibrary.ImageWriterPng:
-                    case ImageSdkLibrary.ImageWriterPngExt:
-                        extensions = ".png";
-                        break;
-
-                    case ImageSdkLibrary.ImageWriterWebM:
-                        extensions = ".webm";
-                        break;
-
-                    case ImageSdkLibrary.ImageWriterPdf:
-                        extensions = ".pdf";
-                        maxPages = 3;
-                        bundle.PutInt(ImageWriter.ConfigPaper, ImageWriter.PaperA4);
-                        break;
-
-                    case ImageSdkLibrary.ImageWriterTiff:
-                        extensions = ".tif";
-                        maxPages = 3;
-                        break;
-
-                    default:
-                        extensions = Path.GetExtension(input.filePath);
-                        break;
-                }
                 var filePath = Path.ChangeExtension(input.filePath, extensions);
-
-                Profiler writeProfiler;
-                using (ImageWriter writer = new ImageSdkLibrary().NewImageWriterInstance(input.writerType))
+                using (ImageWriter writer = new ImageWriter((ImageWriter.EImageFileType)input.writerType))
                 {
                     writer.Open(filePath);
-                    writer.Configure(bundle);
+
+                    switch ((ImageWriter.EImageFileType)input.writerType)
+                    {
+                        case ImageWriter.EImageFileType.Jpeg:
+                            writer.Configure(ImageWriter.EConfigParam.CompressionQuality, 80);
+                            //bundle.PutInt(ImageWriter.ConfigCompression, 80);
+                            break;
+
+                        case ImageWriter.EImageFileType.Png:
+                            break;
+                        case ImageWriter.EImageFileType.PngExt:
+                            break;
+
+                        case ImageWriter.EImageFileType.WebM:
+                            break;
+
+                        case ImageWriter.EImageFileType.PdfPng:
+                        case ImageWriter.EImageFileType.Pdf:
+                            maxPages = 3;
+                            //writer.Configure(ImageWriter.EConfigParam.Paper, input.paperFormat);
+                            writer.Configure(ImageWriter.EConfigParam.Units, ImageWriter.EUnitsConfigValues.Inches);
+                            //writer.Configure(ImageWriter.EConfigParam.FooterHeight, 25);
+                            //writer.Configure(ImageWriter.EConfigParam.FooterText, "Test");
+                            break;
+
+                        case ImageWriter.EImageFileType.Tiff:
+                            maxPages = 3;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    //writer.Configure().Configure(bundle);
                     // Simulate multipages
                     int pageCount = input.multiPages ? maxPages : 1;
-                    writeProfiler = new Profiler(Resource.String.profile_write_file);                    
                     for (int i = 0; i < pageCount; ++i)
                     {
-                        writer.Write(input.image);
-                    }
-                    writeProfiler.Finish();                    
-                }
+                        if (input.writerType == ImageWriter.EImageFileType.PdfPng)
+                        {
+                            if (i == 0)
+                            {
+                                using (ImageWriter subWriter = new ImageWriter(ImageWriter.EImageFileType.PngExt))
+                                {
+                                    subWriter.Open(System.IO.Path.ChangeExtension(filePath, ".png"));
+                                    filePath = subWriter.Write(input.image);
+                                }
+                            }
 
-                // Calculate file size
-                long outputFileSize = new FileInfo(filePath).Length;
+                            writer.WriteFile(filePath, ImageWriter.EImageFileType.Png, input.image.ExifOrientation);
+                        }
+                        else
+                        {
+                            writer.Write(input.image);
+                        }
+                    }
+                }
+                    // Calculate file size
+                    long outputFileSize = new FileInfo(filePath).Length;
 
                 // Build result
-                return new Result(filePath, outputFileSize, writeProfiler);
+                return new Result(filePath, outputFileSize, null);
             }
             catch (Exception e)
             {

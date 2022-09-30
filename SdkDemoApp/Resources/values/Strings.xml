@@ -3,7 +3,6 @@
   <string name="ApplicationName">Pixelnetica SDK Demo</string>
   <string name="MainActivityTitle">SDK Demo</string>
   <string name="EditActivityTitle">Edit Image</string>
-  <string name="select_picture_title">Select Picture</string>
   <string name="permission_query_read_storage">Allow CropDemo to access photos and files on your device?</string>
   <string name="permission_query_write_storage">Allow CropDemo to write files to your device?</string>
   <string name="permission_query_camera">Allow CropDemo to take pictures and record video?</string>
@@ -47,5 +46,5 @@
   -->
   <string name="profile_write_file">Writen {2:D} KiB image file {1:S}</string>
   <string name="about_title">Abount Sdk Demo</string>
-  <string name="about_message">Version {0:S}&lt;br&gt;See more on &lt;a href=&quot;http://www.pixelnetica.com&quot;&gt;Pixelnetica website&lt;/a&gt;</string>
+  <string name="about_message">Version {0:S}&lt;br&gt;See more on &lt;a href=&quot;https://www.pixelnetica.com/products/document-scanning-sdk/document-scanner-sdk.html&quot;&gt;Pixelnetica website&lt;/a&gt;</string>
 </resources>
