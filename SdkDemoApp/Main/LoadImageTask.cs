@@ -75,8 +75,7 @@ namespace App.Main
                     Bundle args = new Bundle();
                     int start = System.Environment.TickCount;
                     var profiler = new Profiler(/*Resource.String.profile_detect_corners*/);
-                    bool bDocumentAreaChecked, bDocumentDistortionChecked;
-                    Corners corners = sdk.DetectDocumentCorners(originImage, false, out bDocumentAreaChecked, out bDocumentDistortionChecked);
+                    Corners corners = sdk.DetectDocumentCorners(originImage);
 
                     profiler.Finish();
                     

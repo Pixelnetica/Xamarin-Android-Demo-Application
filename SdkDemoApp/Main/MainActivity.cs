@@ -253,7 +253,7 @@ namespace App.Main
         private void SaveImageGranted()
         {
             // Build file name
-            var folder = new Java.IO.File(Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryPictures), "Pixelnetica");
+            var folder = new Java.IO.File(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "Pixelnetica");
             folder.Mkdirs();
 
             string fileName = string.Format("SdkDemo-{0:X08}.jpg", UnixTimeNow());

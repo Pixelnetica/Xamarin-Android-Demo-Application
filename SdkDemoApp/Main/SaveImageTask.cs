@@ -114,7 +114,7 @@ namespace App.Main
                             maxPages = 3;
                             //writer.Configure(ImageWriter.EConfigParam.Paper, input.paperFormat);
                             writer.Configure(ImageWriter.EConfigParam.Units, ImageWriter.EUnitsConfigValues.Inches);
-                            //writer.Configure(ImageWriter.EConfigParam.FooterHeight, 25);
+                            writer.Configure(ImageWriter.EConfigParam.FooterHeight, 25);
                             //writer.Configure(ImageWriter.EConfigParam.FooterText, "Test");
                             break;
 
@@ -142,7 +142,7 @@ namespace App.Main
                                 }
                             }
 
-                            writer.WriteFile(filePath, ImageWriter.EImageFileType.Png, input.image.ExifOrientation);
+                            writer.WriteFile(filePath, ImageWriter.EPngPdfImageFileType.Png, input.image.ExifOrientation);
                         }
                         else
                         {
